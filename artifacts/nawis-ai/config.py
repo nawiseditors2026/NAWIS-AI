@@ -2,15 +2,15 @@ import os
 
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
 GROQ_MODEL = "llama-3.3-70b-versatile"
+GROQ_WHISPER_MODEL = "whisper-large-v3-turbo"
 
-TEXTMEBOT_API_KEY = os.environ.get("TEXTMEBOT_API_KEY", "")
-TEXTMEBOT_PHONE = os.environ.get("TEXTMEBOT_PHONE", "")
+TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
 
 SCHOOL_DOCS_FOLDER = "school_data"
-CHROMA_PERSIST_DIR = "chroma_db"
 
 SERIAL_PORT = os.environ.get("SERIAL_PORT", "COM3")
 SERIAL_BAUD = 115200
 
-APP_HOST = "0.0.0.0"
-APP_PORT = int(os.environ.get("PORT", 8000))
+TTS_VOICE_EN = "en-US-EmmaNeural"
+TTS_VOICE_AR = "ar-SA-ZariyahNeural"

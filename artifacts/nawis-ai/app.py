@@ -1,88 +1,85 @@
 """
-NAWIS AI — FastAPI Backend
+NAWIS AI — FastAPI Backend v2
 AI-powered school receptionist for New Al Wurood International School
-Uses in-memory document search (no heavy ML deps) + Groq LLM
 """
 import os
 import asyncio
 import logging
 import time
 import csv
-import json
 import re
 from pathlib import Path
 from datetime import datetime
 from contextlib import asynccontextmanager
-from collections import Counter
-from math import log
 
 import httpx
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, File, Query
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import StreamingResponse, JSONResponse
 from pydantic import BaseModel
 from groq import Groq
 
 from config import (
-    GROQ_API_KEY, GROQ_MODEL,
-    TEXTMEBOT_API_KEY, TEXTMEBOT_PHONE,
-    SCHOOL_DOCS_FOLDER,
-    SERIAL_PORT, SERIAL_BAUD,
+    GROQ_API_KEY, GROQ_MODEL, GROQ_WHISPER_MODEL,
+    TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID,
+    SCHOOL_DOCS_FOLDER, SERIAL_PORT, SERIAL_BAUD,
+    TTS_VOICE_EN, TTS_VOICE_AR,
 )
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("nawis-ai")
 
 # ── Global state ──────────────────────────────────────────────────────────────
-document_chunks: list[dict] = []
+bm25_index = None
+doc_chunks: list[dict] = []
 groq_client: Groq | None = None
 serial_conn = None
 docs_count = 0
 
 SYSTEM_PROMPT = """\
 You are NAWIS AI, the official AI receptionist of New Al Wurood International \
-School (NAWIS) in Jeddah, Saudi Arabia. You speak on behalf of the school \
-warmly and professionally.
+School (NAWIS) in Jeddah, Saudi Arabia. You speak on behalf of the school warmly \
+and professionally.
 
-YOUR JOB: Answer questions from parents and students about the school — \
-admissions, academics, facilities, events, staff, rules, transport, results, \
-and anything a school receptionist would know.
+YOUR JOB: Answer questions from parents and students about the school — admissions, \
+academics, facilities, events, staff, rules, transport, results, and anything a \
+school receptionist would know.
 
 RULES:
 1. Keep answers concise — 2 to 4 sentences. Never ramble.
-2. Be warm, friendly, and professional.
-3. Use the SCHOOL CONTEXT provided below as your primary source. \
-If the context has the answer, use it.
-4. NEVER reveal specific student records, private teacher contact details, \
-internal financial details, or anything that could embarrass the school.
-5. If a question is about sensitive private information, or if you genuinely \
-cannot find the answer in the context, end your entire response with the word \
-ESCALATE on its own line. Do not announce you are escalating — just add the \
-word at the end.
-6. If the user's message is in Arabic, respond in Arabic.
+2. Be warm, friendly, and professional at all times.
+3. Use the SCHOOL CONTEXT provided below as your primary source. If the context \
+has the answer, use it directly.
+4. NEVER reveal specific student records, private teacher contact details, internal \
+financial details, or anything that could embarrass the school.
+5. If a question is about sensitive private information, or if you genuinely cannot \
+find the answer in the context, end your entire response with the word ESCALATE on \
+its own line. Do not announce you are escalating — just add the word at the end.
+6. If the user's message is in Arabic, respond entirely in Arabic.
 7. Always refer to the school as NAWIS or Al Wurood.
 
 SCHOOL CONTEXT FROM DOCUMENTS:
-{context}"""
+{context}
+"""
 
-ESP_STATE_MAP = {
-    "idle":   "I",
-    "listen": "L",
-    "think":  "T",
-    "speak":  "S",
-    "error":  "E",
-}
+ESP_MAP = {"idle": "I", "listen": "L", "think": "T", "speak": "S", "error": "E"}
+
+
+# ── Tokenizer (EN + AR) ───────────────────────────────────────────────────────
+
+def tokenize(text: str) -> list[str]:
+    return re.findall(r"[a-zA-Z\u0600-\u06FF0-9]+", text.lower())
 
 
 # ── Document loading ──────────────────────────────────────────────────────────
 
-def _chunk_text(text: str, source: str, chunk_words: int = 400) -> list[dict]:
+def _chunk_text(text: str, source: str, max_words: int = 350) -> list[dict]:
     words = text.split()
     chunks = []
-    for i in range(0, max(len(words), 1), chunk_words):
-        chunk = " ".join(words[i : i + chunk_words]).strip()
-        if chunk:
-            chunks.append({"text": chunk, "source": source, "id": f"{source}_{i}"})
+    for i in range(0, max(len(words), 1), max_words):
+        chunk = " ".join(words[i : i + max_words]).strip()
+        if len(chunk) > 30:
+            chunks.append({"text": chunk, "source": source})
     return chunks
 
 
@@ -90,7 +87,6 @@ def load_documents() -> list[dict]:
     global docs_count
     folder = Path(SCHOOL_DOCS_FOLDER)
     folder.mkdir(exist_ok=True)
-
     all_chunks: list[dict] = []
 
     for fp in sorted(folder.iterdir()):
@@ -99,72 +95,79 @@ def load_documents() -> list[dict]:
         try:
             text = ""
             suffix = fp.suffix.lower()
-
             if suffix == ".txt":
                 text = fp.read_text(encoding="utf-8", errors="ignore")
-
             elif suffix == ".pdf":
                 try:
                     from pypdf import PdfReader
-                    reader = PdfReader(str(fp))
-                    text = "\n".join(p.extract_text() or "" for p in reader.pages)
+                    text = "\n".join(p.extract_text() or "" for p in PdfReader(str(fp)).pages)
                 except ImportError:
                     logger.warning("pypdf not installed — skipping %s", fp.name)
-
             elif suffix == ".docx":
                 try:
                     from docx import Document
-                    doc = Document(str(fp))
-                    text = "\n".join(p.text for p in doc.paragraphs)
+                    text = "\n".join(p.text for p in Document(str(fp)).paragraphs)
                 except ImportError:
                     logger.warning("python-docx not installed — skipping %s", fp.name)
-
             elif suffix == ".csv":
                 with open(fp, newline="", encoding="utf-8", errors="ignore") as f:
-                    reader_obj = csv.reader(f)
-                    text = "\n".join(", ".join(row) for row in reader_obj)
+                    text = "\n".join(", ".join(row) for row in csv.reader(f))
 
             if text.strip():
                 all_chunks.extend(_chunk_text(text, fp.stem))
                 logger.info("Loaded: %s (%d chars)", fp.name, len(text))
-
         except Exception as exc:
             logger.error("Error loading %s: %s", fp.name, exc)
 
     docs_count = len(all_chunks)
-    logger.info("Documents loaded: %d chunks from %s", docs_count, SCHOOL_DOCS_FOLDER)
+    logger.info("Total chunks: %d", docs_count)
     return all_chunks
 
 
-# ── Lightweight BM25-style retrieval ─────────────────────────────────────────
-
-def _tokenize(text: str) -> list[str]:
-    return re.findall(r"[a-zA-Z\u0600-\u06FF]+", text.lower())
+def build_bm25(chunks: list[dict]):
+    global bm25_index
+    if not chunks:
+        return
+    try:
+        from rank_bm25 import BM25Okapi
+        tokenized = [tokenize(c["text"]) for c in chunks]
+        bm25_index = BM25Okapi(tokenized)
+        logger.info("BM25 index built (%d chunks)", len(chunks))
+    except Exception as exc:
+        logger.error("BM25 build failed: %s", exc)
+        bm25_index = None
 
 
 def query_context(question: str, n: int = 5) -> str:
-    if not document_chunks:
+    if not doc_chunks:
+        return ""
+    tokens = tokenize(question)
+    if not tokens:
         return ""
 
-    q_terms = Counter(_tokenize(question))
-    if not q_terms:
-        return ""
+    if bm25_index is not None:
+        try:
+            scores = bm25_index.get_scores(tokens)
+            top_idx = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)[:n]
+            results = [(scores[i], doc_chunks[i]["text"]) for i in top_idx if scores[i] > 0]
+        except Exception:
+            results = []
+    else:
+        # Fallback: simple keyword scoring
+        from collections import Counter
+        from math import log
+        q_terms = Counter(tokens)
+        results = []
+        for chunk in doc_chunks:
+            ct = Counter(tokenize(chunk["text"]))
+            total = sum(ct.values()) or 1
+            score = sum((ct[t] / total) * log(1 + qf) for t, qf in q_terms.items() if t in ct)
+            if score > 0:
+                results.append((score, chunk["text"]))
+        results.sort(reverse=True)
+        results = results[:n]
 
-    scored: list[tuple[float, str]] = []
-    for chunk in document_chunks:
-        chunk_terms = Counter(_tokenize(chunk["text"]))
-        total = sum(chunk_terms.values()) or 1
-        score = 0.0
-        for term, qf in q_terms.items():
-            tf = chunk_terms.get(term, 0) / total
-            # Simple TF × log(1 + query_freq) scoring
-            score += tf * log(1 + qf)
-        if score > 0:
-            scored.append((score, chunk["text"]))
-
-    scored.sort(reverse=True, key=lambda x: x[0])
-    top = [text for _, text in scored[:n]]
-    return "\n\n---\n\n".join(top)
+    return "\n\n---\n\n".join(txt for _, txt in results)
 
 
 # ── ESP32 serial ──────────────────────────────────────────────────────────────
@@ -177,7 +180,7 @@ def init_serial() -> None:
         time.sleep(2)
         logger.info("ESP32 connected on %s", SERIAL_PORT)
     except Exception as exc:
-        logger.warning("ESP32 not available (%s) — continuing without it.", exc)
+        logger.warning("ESP32 not available (%s)", exc)
         serial_conn = None
 
 
@@ -193,66 +196,70 @@ def send_esp32(char: str) -> None:
         serial_conn = None
 
 
-# ── WhatsApp alert via TextMeBot ──────────────────────────────────────────────
+# ── Telegram alert ────────────────────────────────────────────────────────────
 
-async def send_whatsapp_alert(question: str) -> None:
-    if not TEXTMEBOT_PHONE or not TEXTMEBOT_API_KEY:
-        logger.warning("TextMeBot not configured — skipping WhatsApp alert.")
+async def send_telegram_alert(question: str) -> None:
+    if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
+        logger.warning("Telegram not configured — skipping alert.")
         return
     now = datetime.now().strftime("%H:%M")
     text = (
-        f"🔔 NAWIS AI Alert: A visitor needs help with: "
-        f"{question[:100]}. Please come to reception. Time: {now}"
+        f"\U0001F514 *NAWIS AI \u2014 Escalation Alert*\n\n"
+        f"A visitor needs assistance with:\n_{question[:250]}_\n\n"
+        f"Please come to the reception desk.\n\u23F0 *Time:* {now}"
     )
     try:
         async with httpx.AsyncClient(timeout=10) as client:
-            r = await client.get(
-                "https://api.textmebot.com/send.php",
-                params={"recipient": TEXTMEBOT_PHONE, "apikey": TEXTMEBOT_API_KEY, "text": text},
+            r = await client.post(
+                f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage",
+                json={"chat_id": TELEGRAM_CHAT_ID, "text": text, "parse_mode": "Markdown"},
             )
-            logger.info("TextMeBot: %s %s", r.status_code, r.text[:80])
+            logger.info("Telegram alert sent: %s", r.status_code)
     except Exception as exc:
-        logger.error("TextMeBot error: %s", exc)
+        logger.error("Telegram error: %s", exc)
 
 
 # ── Lifespan ──────────────────────────────────────────────────────────────────
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global groq_client, document_chunks
+    global groq_client, doc_chunks
 
-    logger.info("═" * 55)
-    logger.info("  NAWIS AI  —  starting up…")
-    logger.info("═" * 55)
+    logger.info("=" * 56)
+    logger.info("  NAWIS AI  v2  —  starting up…")
+    logger.info("=" * 56)
 
-    document_chunks = load_documents()
+    doc_chunks = load_documents()
+    build_bm25(doc_chunks)
 
     if GROQ_API_KEY:
         groq_client = Groq(api_key=GROQ_API_KEY)
-        logger.info("Groq client ready  (%s)", GROQ_MODEL)
+        logger.info("Groq ready  |  LLM: %s  |  STT: %s", GROQ_MODEL, GROQ_WHISPER_MODEL)
     else:
-        logger.warning("GROQ_API_KEY not set — AI responses will be disabled.")
+        logger.warning("GROQ_API_KEY not set — AI responses and STT disabled.")
 
     init_serial()
     send_esp32("I")
-    logger.info("NAWIS AI ready ✓")
+    logger.info("NAWIS AI ready \u2713")
     yield
 
     if serial_conn and serial_conn.is_open:
         serial_conn.close()
 
 
-# ── FastAPI app ───────────────────────────────────────────────────────────────
+# ── App ───────────────────────────────────────────────────────────────────────
 
-app = FastAPI(title="NAWIS AI", version="1.0.0", lifespan=lifespan)
+app = FastAPI(title="NAWIS AI", version="2.0.0", lifespan=lifespan)
 
+
+# ── Models ────────────────────────────────────────────────────────────────────
 
 class ChatRequest(BaseModel):
     message: str
     language: str = "en"
 
 
-# ── API routes ────────────────────────────────────────────────────────────────
+# ── Endpoints ─────────────────────────────────────────────────────────────────
 
 @app.post("/chat")
 async def chat(req: ChatRequest):
@@ -260,48 +267,100 @@ async def chat(req: ChatRequest):
 
     context = query_context(req.message)
     prompt = SYSTEM_PROMPT.format(
-        context=context if context else "No document context available — answer from general knowledge about the school."
+        context=context or "No document context available — answer from general school knowledge."
     )
 
     if groq_client is None:
         send_esp32("I")
         return {
-            "reply": (
-                "I'm sorry, the AI service is not configured yet. "
-                "Please contact the school office at +966 55 273 0945."
-            ),
+            "reply": "The AI service is not configured yet. Please contact the school office at +966 55 273 0945.",
             "escalate": False,
         }
 
     try:
-        response = groq_client.chat.completions.create(
+        resp = groq_client.chat.completions.create(
             model=GROQ_MODEL,
             messages=[
                 {"role": "system", "content": prompt},
                 {"role": "user",   "content": req.message},
             ],
-            max_tokens=350,
-            temperature=0.65,
+            max_tokens=400,
+            temperature=0.6,
         )
-        raw = response.choices[0].message.content or ""
-        should_escalate = "ESCALATE" in raw
+        raw = resp.choices[0].message.content or ""
+        escalate = "ESCALATE" in raw
         clean = raw.replace("ESCALATE", "").strip()
 
-        if should_escalate:
+        if escalate:
             send_esp32("E")
-            asyncio.create_task(send_whatsapp_alert(req.message))
-            return {"reply": clean, "escalate": True}
+            asyncio.create_task(send_telegram_alert(req.message))
+        else:
+            send_esp32("S")
 
-        send_esp32("S")
-        return {"reply": clean, "escalate": False}
+        return {"reply": clean, "escalate": escalate}
 
     except Exception as exc:
-        logger.error("Groq error: %s", exc)
+        logger.error("Groq LLM error: %s", exc)
         send_esp32("I")
         return {
-            "reply": "I'm having a moment — please try again or speak to our front desk staff directly.",
+            "reply": "I'm having a moment — please try again or speak to our front desk staff.",
             "escalate": False,
         }
+
+
+@app.post("/stt")
+async def speech_to_text(audio: UploadFile = File(...), lang: str = Query("en")):
+    """Transcribe audio using Groq Whisper."""
+    if groq_client is None:
+        return JSONResponse({"text": "", "error": "Groq not configured"}, status_code=503)
+
+    data = await audio.read()
+    if len(data) < 500:
+        return JSONResponse({"text": "", "error": "Audio too short or empty"})
+
+    lang_code = "ar" if lang == "ar" else "en"
+    fname = audio.filename or "recording.webm"
+    mime = audio.content_type or "audio/webm"
+
+    try:
+        result = groq_client.audio.transcriptions.create(
+            model=GROQ_WHISPER_MODEL,
+            file=(fname, data, mime),
+            language=lang_code,
+            response_format="json",
+        )
+        text = result.text.strip() if hasattr(result, "text") else str(result).strip()
+        logger.info("STT [%s]: %s…", lang, text[:60])
+        return {"text": text}
+    except Exception as exc:
+        logger.error("Whisper error: %s", exc)
+        return JSONResponse({"text": "", "error": str(exc)}, status_code=500)
+
+
+@app.get("/tts")
+async def text_to_speech(text: str = Query(...), lang: str = Query("en")):
+    """Stream natural TTS audio via edge-tts (Microsoft Neural voices)."""
+    try:
+        import edge_tts
+    except ImportError:
+        raise HTTPException(503, "edge-tts not installed")
+
+    voice = TTS_VOICE_AR if lang == "ar" else TTS_VOICE_EN
+    clean_text = text[:600].strip()
+    if not clean_text:
+        raise HTTPException(400, "Empty text")
+
+    async def audio_stream():
+        communicate = edge_tts.Communicate(text=clean_text, voice=voice, rate="+2%")
+        async for chunk in communicate.stream():
+            if chunk["type"] == "audio":
+                yield chunk["data"]
+
+    return StreamingResponse(
+        audio_stream(),
+        media_type="audio/mpeg",
+        headers={"Cache-Control": "no-cache, no-store, must-revalidate"},
+    )
 
 
 @app.get("/status")
@@ -309,35 +368,28 @@ async def status():
     return {
         "status": "ready",
         "docs_loaded": docs_count,
-        "rag_ready": len(document_chunks) > 0,
+        "rag_ready": bm25_index is not None,
         "esp32_connected": (serial_conn is not None and serial_conn.is_open) if serial_conn else False,
         "groq_ready": groq_client is not None,
         "model": GROQ_MODEL,
+        "whisper_model": GROQ_WHISPER_MODEL,
+        "telegram_configured": bool(TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID),
     }
 
 
 @app.post("/esp32/{state}")
 async def esp32_state(state: str):
-    char = ESP_STATE_MAP.get(state)
+    char = ESP_MAP.get(state)
     if not char:
-        raise HTTPException(status_code=400, detail=f"Unknown state '{state}'")
+        raise HTTPException(400, f"Unknown state '{state}'")
     send_esp32(char)
-    return {"ok": True, "state": state, "char": char}
+    return {"ok": True, "state": state}
 
 
-# ── Frontend ──────────────────────────────────────────────────────────────────
+# ── Serve frontend ────────────────────────────────────────────────────────────
+# FastAPI router routes above always take priority over the static mount below.
 
 FRONTEND_DIR = Path(__file__).parent / "frontend"
 FRONTEND_DIR.mkdir(exist_ok=True)
 
-
-@app.get("/")
-async def serve_index():
-    index = FRONTEND_DIR / "index.html"
-    if index.exists():
-        return FileResponse(str(index))
-    return {"message": "NAWIS AI is running. Place index.html in the frontend/ folder."}
-
-
-# Mount static files — API routes above take priority
-app.mount("/assets", StaticFiles(directory=str(FRONTEND_DIR)), name="static")
+app.mount("/", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend")
