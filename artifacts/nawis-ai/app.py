@@ -321,7 +321,7 @@ async def chat(req: ChatRequest):
 
         if escalate:
             send_esp32("E")
-            asyncio.create_task(send_whatsapp_alert(req.message))
+            asyncio.create_task(send_telegram_alert(req.message))
         else:
             send_esp32("S")
 
@@ -413,6 +413,30 @@ async def text_to_speech(text: str = Query(...), lang: str = Query("en")):
             "Content-Length": str(len(buf)),
         },
     )
+
+
+@app.get("/api/teachers")
+async def get_teachers():
+    """Return structured teacher list parsed from school_data/teachers.txt"""
+    teachers_file = Path(SCHOOL_DOCS_FOLDER) / "teachers.txt"
+    if not teachers_file.exists():
+        return []
+    text = teachers_file.read_text(encoding="utf-8", errors="ignore")
+    teachers = []
+    blocks = [b.strip() for b in text.split("---") if b.strip() and not b.strip().startswith("#")]
+    for block in blocks:
+        teacher: dict[str, str] = {}
+        for line in block.splitlines():
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+            if ":" in line:
+                key, val = line.split(":", 1)
+                teacher[key.strip().lower().replace(" ", "_")] = val.strip()
+        name = teacher.get("name", "")
+        if name and not name.startswith("["):
+            teachers.append(teacher)
+    return teachers
 
 
 @app.get("/status")
