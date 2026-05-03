@@ -339,7 +339,8 @@ async def speech_to_text(audio: UploadFile = File(...), lang: str = Query("en"))
 
 @app.get("/tts")
 async def text_to_speech(text: str = Query(...), lang: str = Query("en")):
-    """Stream natural TTS audio via edge-tts (Microsoft Neural voices)."""
+    """Stream natural TTS audio via edge-tts (Microsoft Neural voices).
+    Used when running locally — in Replit the browser handles TTS directly."""
     try:
         import edge_tts
     except ImportError:
@@ -350,16 +351,23 @@ async def text_to_speech(text: str = Query(...), lang: str = Query("en")):
     if not clean_text:
         raise HTTPException(400, "Empty text")
 
-    async def audio_stream():
+    buf = bytearray()
+    try:
         communicate = edge_tts.Communicate(text=clean_text, voice=voice, rate="+2%")
         async for chunk in communicate.stream():
             if chunk["type"] == "audio":
-                yield chunk["data"]
+                buf.extend(chunk["data"])
+    except Exception as exc:
+        logger.error("edge-tts error: %s", exc)
+        raise HTTPException(502, f"TTS upstream error: {exc}")
+
+    if not buf:
+        raise HTTPException(502, "edge-tts returned no audio data")
 
     return StreamingResponse(
-        audio_stream(),
+        iter([bytes(buf)]),
         media_type="audio/mpeg",
-        headers={"Cache-Control": "no-cache, no-store, must-revalidate"},
+        headers={"Cache-Control": "no-cache, no-store, must-revalidate", "Content-Length": str(len(buf))},
     )
 
 

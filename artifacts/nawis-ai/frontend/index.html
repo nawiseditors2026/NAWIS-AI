@@ -531,9 +531,21 @@ const T = {
    STATE
 ───────────────────────────────────────── */
 let lang='en', ttsOn=true, isRec=false;
-let mediaRec=null, audioChunks=[], curAudio=null, busy=false;
+let mediaRec=null, audioChunks=[], curAudio=null, curUtter=null, busy=false;
 const app=document.getElementById('app');
 const orbLbl=document.getElementById('orb-lbl');
+
+/* Pre-load voices as soon as possible (browser may lazy-load) */
+let voicesLoaded=false;
+function loadVoices(){
+  const v=window.speechSynthesis?.getVoices()||[];
+  if(v.length>0)voicesLoaded=true;
+  return v;
+}
+if(window.speechSynthesis){
+  loadVoices();
+  window.speechSynthesis.onvoiceschanged=()=>{loadVoices();};
+}
 
 function setState(s){
   app.setAttribute('data-state',s);
@@ -576,7 +588,12 @@ function toggleTTS(){
   ttsOn=!ttsOn;
   $('tts-ico').textContent=ttsOn?'🔊':'🔇';
   $('tts-btn').classList.toggle('muted',!ttsOn);
-  if(!ttsOn&&curAudio){curAudio.pause();curAudio=null;setState('idle');}
+  if(!ttsOn){stopSpeaking();setState('idle');}
+}
+
+function stopSpeaking(){
+  if(curAudio){curAudio.pause();URL.revokeObjectURL(curAudio.src);curAudio=null;}
+  if(curUtter){window.speechSynthesis?.cancel();curUtter=null;}
 }
 
 /* ─────────────────────────────────────────
@@ -643,7 +660,7 @@ function scrollDown(){
 async function sendText(text){
   const t=text.trim();if(!t||busy)return;
   busy=true;$('user-input').value='';
-  if(curAudio){curAudio.pause();curAudio=null;}
+  stopSpeaking();
   addMsg('user',t);setState('thinking');addTyping();
   try{
     const r=await fetch('/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:t,language:lang})});
@@ -662,56 +679,159 @@ function sendMessage(){const v=$('user-input').value.trim();if(v)sendText(v);}
 function onEnter(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}}
 
 /* ─────────────────────────────────────────
-   TTS — edge-tts via /tts backend
+   TTS — browser speechSynthesis (primary)
+   Best neural voices on Windows: Edge/Chrome use Microsoft Natural voices.
+   Falls back to /tts (edge-tts backend) if browser synthesis not available.
 ───────────────────────────────────────── */
+
+/* Pick the best available voice for a language */
+function pickVoice(langCode){
+  const voices=window.speechSynthesis?.getVoices()||[];
+  const isAr=langCode==='ar';
+  const pref=isAr
+    ?['ar-SA','ar-EG','ar-AE','ar']
+    :['en-US','en-GB','en-AU','en'];
+
+  /* Priority order: Neural > Premium > Standard */
+  const keywords=['Neural','Natural','Premium','Enhanced','Online'];
+
+  for(const kw of keywords){
+    for(const lc of pref){
+      const v=voices.find(v=>v.lang.startsWith(lc)&&v.name.includes(kw)&&!v.name.toLowerCase().includes('zira'));
+      if(v)return v;
+    }
+  }
+  /* Any voice matching lang */
+  for(const lc of pref){
+    const v=voices.find(v=>v.lang.startsWith(lc));
+    if(v)return v;
+  }
+  return voices[0]||null;
+}
+
 async function speakText(text){
   if(!ttsOn){setState('idle');return;}
   setState('speaking');
+
+  /* ── Try browser speechSynthesis first ── */
+  if(window.speechSynthesis){
+    /* Give browser a moment to have voices if not yet loaded */
+    if(!voicesLoaded){
+      await new Promise(r=>{
+        const check=()=>{if(window.speechSynthesis.getVoices().length>0){voicesLoaded=true;r();}};
+        check();
+        window.speechSynthesis.onvoiceschanged=()=>check();
+        setTimeout(r,1500);
+      });
+    }
+    const voice=pickVoice(lang);
+    const utter=new SpeechSynthesisUtterance(text.slice(0,800));
+    utter.lang=lang==='ar'?'ar-SA':'en-US';
+    utter.rate=1.0;
+    utter.pitch=1.0;
+    utter.volume=1.0;
+    if(voice)utter.voice=voice;
+    curUtter=utter;
+    return new Promise(resolve=>{
+      utter.onend=()=>{curUtter=null;setState('idle');resolve();};
+      utter.onerror=async(e)=>{
+        console.warn('Browser TTS error:',e.error,'. Trying backend TTS…');
+        curUtter=null;
+        await speakViaBackend(text);
+        resolve();
+      };
+      /* Chrome bug: synthesis stalls after ~15s — keep it alive */
+      const keepAlive=setInterval(()=>{
+        if(!window.speechSynthesis.speaking){clearInterval(keepAlive);return;}
+        window.speechSynthesis.pause();
+        window.speechSynthesis.resume();
+      },10000);
+      utter.onend=()=>{clearInterval(keepAlive);curUtter=null;setState('idle');resolve();};
+      window.speechSynthesis.speak(utter);
+    });
+  }else{
+    await speakViaBackend(text);
+  }
+}
+
+/* Backend TTS fallback — great when running locally (edge-tts has network access) */
+async function speakViaBackend(text){
+  setState('speaking');
   try{
-    const r=await fetch('/tts?'+new URLSearchParams({text:text.slice(0,600),lang}));
-    if(!r.ok)throw new Error('TTS failed');
+    const r=await fetch('/tts?'+new URLSearchParams({text:text.slice(0,600),lang}),{signal:AbortSignal.timeout(12000)});
+    if(!r.ok)throw new Error('TTS HTTP '+r.status);
     const blob=await r.blob();
+    if(!blob.size)throw new Error('Empty audio');
     const url=URL.createObjectURL(blob);
     curAudio=new Audio(url);
-    curAudio.onended=()=>{setState('idle');URL.revokeObjectURL(url);curAudio=null;};
-    curAudio.onerror=()=>{setState('idle');curAudio=null;};
-    await curAudio.play();
-  }catch(e){console.warn('TTS:',e);setState('idle');}
+    await new Promise((res,rej)=>{
+      curAudio.onended=()=>{URL.revokeObjectURL(url);curAudio=null;setState('idle');res();};
+      curAudio.onerror=()=>{URL.revokeObjectURL(url);curAudio=null;setState('idle');res();};
+      curAudio.play().catch(rej);
+    });
+  }catch(e){
+    console.warn('Backend TTS failed:',e);
+    setState('idle');
+  }
 }
 
 /* ─────────────────────────────────────────
    STT — MediaRecorder → Groq Whisper
+   Uses MediaRecorder API (works in all modern browsers after mic permission).
+   Audio is sent to /stt which calls Groq whisper-large-v3-turbo.
 ───────────────────────────────────────── */
 async function toggleMic(){isRec?stopRec():await startRec();}
 
 async function startRec(){
   if(busy)return;
+  stopSpeaking();
+
+  /* Ensure MediaRecorder is supported */
+  if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){
+    toast('Voice input is not supported in this browser.','error');return;
+  }
+
   let stream;
-  try{stream=await navigator.mediaDevices.getUserMedia({audio:{channelCount:1,sampleRate:16000},video:false});}
-  catch(e){
-    if(e.name==='NotAllowedError'||e.name==='PermissionDeniedError'){toast(T[lang].tMicDeny,'error');}
-    else{toast(T[lang].tMicErr,'error');}
+  try{
+    stream=await navigator.mediaDevices.getUserMedia({audio:true,video:false});
+  }catch(e){
+    if(e.name==='NotAllowedError'||e.name==='PermissionDeniedError'){
+      toast(T[lang].tMicDeny,'error');
+    }else{
+      toast(T[lang].tMicErr,'error');
+      console.error('Mic error:',e);
+    }
     return;
   }
-  if(curAudio){curAudio.pause();curAudio=null;}
+
   audioChunks=[];isRec=true;setState('listening');
   $('rec-ind').classList.add('on');
-  $('user-input').style.opacity='.3';
+  $('user-input').style.opacity='.35';
   $('mic-btn').classList.add('rec');
   toast(T[lang].tMicStart);
 
-  const mime=['audio/webm;codecs=opus','audio/webm','audio/ogg','audio/mp4']
-    .find(m=>MediaRecorder.isTypeSupported(m))||'';
-  mediaRec=new MediaRecorder(stream,mime?{mimeType:mime}:{});
-  mediaRec.ondataavailable=e=>{if(e.data.size>0)audioChunks.push(e.data);};
+  /* Pick best supported MIME — Groq Whisper accepts webm/ogg/mp4/flac/mp3/wav */
+  const mime=['audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus','audio/ogg','audio/mp4']
+    .find(m=>{try{return MediaRecorder.isTypeSupported(m);}catch{return false;}})||'';
+
+  try{
+    mediaRec=new MediaRecorder(stream,mime?{mimeType:mime}:{});
+  }catch(e){
+    mediaRec=new MediaRecorder(stream);
+  }
+
+  mediaRec.ondataavailable=e=>{if(e.data&&e.data.size>0)audioChunks.push(e.data);};
   mediaRec.onstop=async()=>{stream.getTracks().forEach(t=>t.stop());await transcribe();};
-  mediaRec.start();
-  setTimeout(()=>{if(isRec)stopRec();},12000);
+  mediaRec.start(200); /* collect in 200ms chunks for reliability */
+
+  /* Auto-stop after 14 seconds */
+  setTimeout(()=>{if(isRec)stopRec();},14000);
 }
 
 function stopRec(){
   if(!isRec||!mediaRec)return;
-  isRec=false;mediaRec.stop();
+  isRec=false;
+  try{if(mediaRec.state!=='inactive')mediaRec.stop();}catch(e){console.warn(e);}
   $('rec-ind').classList.remove('on');
   $('user-input').style.opacity='1';
   $('mic-btn').classList.remove('rec');
@@ -720,19 +840,35 @@ function stopRec(){
 async function transcribe(){
   if(!audioChunks.length){setState('idle');toast(T[lang].tMicErr,'error');return;}
   setState('thinking');toast(T[lang].tXcribe);
-  const mime=audioChunks[0].type||'audio/webm';
-  const ext=mime.includes('ogg')?'ogg':mime.includes('mp4')?'mp4':'webm';
-  const blob=new Blob(audioChunks,{type:mime});audioChunks=[];
-  const fd=new FormData();fd.append('audio',blob,`rec.${ext}`);
+
+  const type=audioChunks[0].type||'audio/webm';
+  const ext=type.includes('ogg')?'ogg':type.includes('mp4')?'mp4':'webm';
+  const blob=new Blob(audioChunks,{type});
+  audioChunks=[];
+
+  if(blob.size<300){setState('idle');toast(T[lang].tMicErr,'error');return;}
+
+  const fd=new FormData();
+  fd.append('audio',blob,`recording.${ext}`);
+
   try{
-    const r=await fetch(`/stt?lang=${lang}`,{method:'POST',body:fd});
-    if(!r.ok)throw new Error('STT '+r.status);
+    const r=await fetch(`/stt?lang=${lang}`,{method:'POST',body:fd,signal:AbortSignal.timeout(20000)});
+    if(!r.ok)throw new Error('STT HTTP '+r.status);
     const d=await r.json();
+    if(d.error){console.warn('STT error:',d.error);}
     if(d.text?.trim()){
       $('user-input').value=d.text.trim();
-      setState('idle');await sendText(d.text.trim());
-    }else{setState('idle');toast(T[lang].tMicErr,'error');}
-  }catch(e){console.error('STT:',e);setState('idle');toast(T[lang].tConn,'error');}
+      setState('idle');
+      await sendText(d.text.trim());
+    }else{
+      setState('idle');
+      toast(T[lang].tMicErr,'error');
+    }
+  }catch(e){
+    console.error('STT fetch:',e);
+    setState('idle');
+    toast(T[lang].tConn,'error');
+  }
 }
 
 /* ─────────────────────────────────────────
