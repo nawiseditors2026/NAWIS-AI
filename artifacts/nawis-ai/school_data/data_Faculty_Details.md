@@ -1,88 +1,21 @@
-# NAWIS Faculty Directory — 2026–27
-# =====================================
-# Instructions for school staff:
-# Fill in actual teacher details below using the same format.
-# Each teacher block starts with "---". Remove lines with [brackets].
-# The AI assistant reads this file to answer teacher-related questions.
-
----
-Name: Mrs. Bhuvaneshwari Subramaniam
-Role: Principal
-Department: Administration
-Subjects: School Leadership & Administration
-Grades: All
-Experience: Over 15 years in education leadership
-Qualification: M.Ed, B.Ed
-Extension: 100
-
----
-Name: [Teacher Full Name]
-Department: Mathematics
-Subjects: Mathematics, Additional Mathematics
-Grades: 9, 10, 11, 12
-Experience: [X] years
-Qualification: M.Sc Mathematics, B.Ed
-Extension: 201
-
----
-Name: [Teacher Full Name]
-Department: Science
-Subjects: Physics, Chemistry, Biology
-Grades: 9, 10, 11, 12
-Experience: [X] years
-Qualification: M.Sc Science, B.Ed
-Extension: 202
-
----
-Name: [Teacher Full Name]
-Department: English
-Subjects: English Language, English Literature
-Grades: 6, 7, 8, 9, 10, 11, 12
-Experience: [X] years
-Qualification: M.A English, B.Ed
-Extension: 203
-
----
-Name: [Teacher Full Name]
-Department: Arabic & Islamic Studies
-Subjects: Arabic Language, Islamic Studies
-Grades: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
-Experience: [X] years
-Qualification: B.A Arabic Literature
-Extension: 204
-
----
-Name: [Teacher Full Name]
-Department: Social Studies
-Subjects: Social Science, History, Geography
-Grades: 6, 7, 8, 9, 10
-Experience: [X] years
-Qualification: M.A Social Science, B.Ed
-Extension: 205
-
----
-Name: [Teacher Full Name]
-Department: Computer Science & IT
-Subjects: Computer Science, Information Technology
-Grades: 6, 7, 8, 9, 10, 11, 12
-Experience: [X] years
-Qualification: B.Tech Computer Science, B.Ed
-Extension: 206
-
----
-Name: [Teacher Full Name]
-Department: Physical Education
-Subjects: Physical Education, B.E.S.T Sports Programme
-Grades: All
-Experience: [X] years
-Qualification: B.P.Ed
-Extension: 207
-
----
-Name: [Teacher Full Name]
-Department: Arts & Visual Performance
-Subjects: Fine Arts, Visual Performance Arts
-Grades: All
-Experience: [X] years
-Qualification: B.F.A, B.Ed
-Extension: 208
+| NEW AL WUROOD INTERNATIONAL SCHOOL, JEDDAH   | Unnamed: 1   | Unnamed: 2                   | Unnamed: 3                                             | Unnamed: 4                   | Unnamed: 5     | Unnamed: 6          |
+|:---------------------------------------------|:-------------|:-----------------------------|:-------------------------------------------------------|:-----------------------------|:---------------|:--------------------|
+| FACULTY 2026-27(NAWIS BOYS' SECTION)         | nan          | nan                          | nan                                                    | nan                          | nan            | nan                 |
+| SL. NO                                       | CLASS        | CLASS TEACHER                | Subjects taking                                        | Email ID (Official)          | Contact Number | TEACHER EXPERIENCE  |
+| 1                                            | 7A           | MR.SYED ISMAIL               | Computer Science, Information Technology, VR, Robotics | syisma@gmail.com             | 508881557      | 28 years experience |
+| 2                                            | 8A           | MR.JOMCY RAJAN               | Social Science                                         | jomcyrajan96@gmail.com       | 504546535      | 5 years experience  |
+| 3                                            | 8B           | MR.ANEES FAZIL               | Biology                                                | fazilnawis@gmail.com         | 555732051      | 5 year experience   |
+| 4                                            | 9A           | MR.MUSTHAQ                   | English                                                | mushtaq.nawis18@gmail.com    | 565838873      | 20 year experience  |
+| 5                                            | 10A          | MR.ABDUL RAHEEM PANDIT       | Hindi                                                  | panditrahim08@gmail.com      | 562784165      | 32 years experience |
+| 6                                            | 10B          | MR.JOHN                      | Mathematics                                            | johngthomas777@gmail.com     | 536423849      | 10 years experience |
+| 7                                            | 11A          | MR.SYED RAHEEMUDDIN          | Physics                                                | syedphysicsonzoom@gmail.com  | 597743466      | 21 years experience |
+| 8                                            | 11B          | MR.SAREN                     | English                                                | sarensuresh303@gmail.com     | 562440348      | 5 years experience  |
+| 9                                            | 12A          | MS.BASMA                     | Chemistry                                              | basmanawis@gmail.com         | 536276021      | 5 years experience  |
+| 10                                           | 12B          | MR.ABDUL SALAM               | Economics & Entreprenuership                           | salamwurood@gmail.com        | 562514566      | 20 years experience |
+| 11                                           | HEADMASTER   | MR.SAIFUDHEEN                | Mathematics & Biology                                  | Hm@alwuroodschool.org        | 540905410      | 16 years experience |
+| 12                                           | MATHS        | MR.ABDUL RAHIM PK            | Mathematics                                            | pkarahim@gmail.com           | 551475847      | 18 years experience |
+| 13                                           | ACCOUNTANCY  | MS.MUMTHAS                   | Accountancy & Busniess                                 | mumthaspalo@gmail.com        | 543545271      | 20 years experience |
+| 14                                           | PE           | MR.NIHAL                     | Physical Education                                     | nihalchaaliyan@gmail.com     | 535096266      | 5 years experience  |
+| 15                                           | ARABIC       | MR.ABDUL RAHMAN AL HAZMI     | Arabic                                                 | nan                          | nan            | nan                 |
+| 16                                           | ARABIC       | MR.WAEL AL ASMARI            | Saudi History and Geography                            | nan                          | nan            | nan                 |
+| 17                                           | PRINCIPAL    | MS.BHUVANESHWARI SUBRAMANIAM | Principal of the School                                | Principal@alwuroodschool.org | nan            | 25 years experience |
