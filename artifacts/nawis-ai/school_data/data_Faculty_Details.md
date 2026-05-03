@@ -1,0 +1,88 @@
+# NAWIS Faculty Directory — 2026–27
+# =====================================
+# Instructions for school staff:
+# Fill in actual teacher details below using the same format.
+# Each teacher block starts with "---". Remove lines with [brackets].
+# The AI assistant reads this file to answer teacher-related questions.
+
+---
+Name: Mrs. Bhuvaneshwari Subramaniam
+Role: Principal
+Department: Administration
+Subjects: School Leadership & Administration
+Grades: All
+Experience: Over 15 years in education leadership
+Qualification: M.Ed, B.Ed
+Extension: 100
+
+---
+Name: [Teacher Full Name]
+Department: Mathematics
+Subjects: Mathematics, Additional Mathematics
+Grades: 9, 10, 11, 12
+Experience: [X] years
+Qualification: M.Sc Mathematics, B.Ed
+Extension: 201
+
+---
+Name: [Teacher Full Name]
+Department: Science
+Subjects: Physics, Chemistry, Biology
+Grades: 9, 10, 11, 12
+Experience: [X] years
+Qualification: M.Sc Science, B.Ed
+Extension: 202
+
+---
+Name: [Teacher Full Name]
+Department: English
+Subjects: English Language, English Literature
+Grades: 6, 7, 8, 9, 10, 11, 12
+Experience: [X] years
+Qualification: M.A English, B.Ed
+Extension: 203
+
+---
+Name: [Teacher Full Name]
+Department: Arabic & Islamic Studies
+Subjects: Arabic Language, Islamic Studies
+Grades: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+Experience: [X] years
+Qualification: B.A Arabic Literature
+Extension: 204
+
+---
+Name: [Teacher Full Name]
+Department: Social Studies
+Subjects: Social Science, History, Geography
+Grades: 6, 7, 8, 9, 10
+Experience: [X] years
+Qualification: M.A Social Science, B.Ed
+Extension: 205
+
+---
+Name: [Teacher Full Name]
+Department: Computer Science & IT
+Subjects: Computer Science, Information Technology
+Grades: 6, 7, 8, 9, 10, 11, 12
+Experience: [X] years
+Qualification: B.Tech Computer Science, B.Ed
+Extension: 206
+
+---
+Name: [Teacher Full Name]
+Department: Physical Education
+Subjects: Physical Education, B.E.S.T Sports Programme
+Grades: All
+Experience: [X] years
+Qualification: B.P.Ed
+Extension: 207
+
+---
+Name: [Teacher Full Name]
+Department: Arts & Visual Performance
+Subjects: Fine Arts, Visual Performance Arts
+Grades: All
+Experience: [X] years
+Qualification: B.F.A, B.Ed
+Extension: 208

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>NAWIS AI — Al Wurood International School</title>
+<title>NAWIS AI — Al Nurood International School</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet"/>
@@ -47,11 +47,9 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);background:var(--b
 .tb-sep{width:1px;height:22px;background:var(--slate200)}
 .tb-school{display:flex;flex-direction:column;gap:1px}
 .tb-school-en{font-family:var(--font-brand);font-size:12px;font-weight:700;color:var(--slate800);line-height:1.2}
-.tb-school-ar{font-family:var(--font-ar);font-size:10px;color:var(--slate400);direction:rtl;line-height:1.3}
+.tb-school-ar{font-family:var(--font-ar);font-size:10.5px;color:var(--slate400);direction:rtl;line-height:1.3}
 .tb-center{text-align:center}
-.tb-brand{font-family:var(--font-brand);font-size:20px;font-weight:700;color:var(--slate900);
-  letter-spacing:.02em}
-.tb-brand-tagline{font-size:11px;color:var(--slate400);margin-top:1px}
+.tb-brand{font-family:var(--font-brand);font-size:21px;font-weight:700;color:var(--slate900);letter-spacing:.02em}
 .tb-right{display:flex;align-items:center;gap:10px;justify-content:flex-end}
 .icon-btn{
   width:34px;height:34px;border-radius:var(--r-sm);border:1px solid var(--slate200);
@@ -88,7 +86,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);background:var(--b
 .nav-ico{font-size:16px;width:20px;text-align:center;flex-shrink:0}
 .sb-divider{height:1px;background:var(--slate100);margin:8px 10px}
 .sb-footer{
-  padding:14px 14px;border-top:1px solid var(--slate100);
+  padding:14px;border-top:1px solid var(--slate100);
   font-size:10.5px;color:var(--slate400);line-height:1.8;
 }
 .sb-footer a{color:var(--slate400);text-decoration:none}
@@ -101,8 +99,6 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);background:var(--b
 
 /* ══ PAGE: CHAT ══════════════════════════════════════════════════════════ */
 #page-chat{background:var(--bg)}
-
-/* Globe section */
 #globe-sec{
   flex-shrink:0;display:flex;flex-direction:column;align-items:center;
   padding:18px 0 10px;gap:9px;
@@ -144,19 +140,13 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);background:var(--b
 [data-state="listening"] .mic-ring{animation:ring-out 1.6s ease-out infinite}
 @keyframes ring-out{0%{opacity:.7;transform:scale(.88)}100%{opacity:0;transform:scale(1.25)}}
 .globe-wrap{position:relative;width:116px;height:116px}
-
-/* Globe label */
 .globe-label{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:500;color:var(--slate500)}
 .globe-label-ar{font-family:var(--font-ar);font-size:12px;color:var(--slate400);direction:rtl}
 .lbl-sep{color:var(--slate300)}
-[data-state="listening"]  .globe-label,
-[data-state="listening"]  .globe-label-ar{color:#2563eb}
-[data-state="thinking"]   .globe-label,
-[data-state="thinking"]   .globe-label-ar{color:#d97706}
-[data-state="speaking"]   .globe-label,
-[data-state="speaking"]   .globe-label-ar{color:#059669}
-[data-state="escalating"] .globe-label,
-[data-state="escalating"] .globe-label-ar{color:#dc2626}
+[data-state="listening"]  .globe-label,[data-state="listening"]  .globe-label-ar{color:#2563eb}
+[data-state="thinking"]   .globe-label,[data-state="thinking"]   .globe-label-ar{color:#d97706}
+[data-state="speaking"]   .globe-label,[data-state="speaking"]   .globe-label-ar{color:#059669}
+[data-state="escalating"] .globe-label,[data-state="escalating"] .globe-label-ar{color:#dc2626}
 
 /* Chat area */
 #chat-area{flex:1;overflow-y:auto;padding:14px 24px;scroll-behavior:smooth;min-height:0}
@@ -220,7 +210,6 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);background:var(--b
   flex:1;height:44px;padding:0 16px;border:1.5px solid var(--slate200);
   border-radius:var(--r-pill);font-family:var(--font);font-size:14px;
   color:var(--slate900);background:var(--white);outline:none;transition:all var(--t);
-  box-shadow:0 1px 2px rgba(0,0,0,.05);
 }
 #user-input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(27,107,47,.1)}
 #user-input::placeholder{color:var(--slate400)}
@@ -234,53 +223,50 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);background:var(--b
 .send-btn:active{transform:scale(.97)}
 .send-btn:disabled{background:var(--slate300);box-shadow:none;cursor:not-allowed;transform:none}
 
-/* ══ PAGE: ABOUT ═════════════════════════════════════════════════════════ */
-.page-scroll{overflow-y:auto;flex:1;padding:0}
+/* ══ SHARED PAGE STYLES ══════════════════════════════════════════════════ */
+.page-scroll{overflow-y:auto;flex:1}
 .pg-hero{
   background:linear-gradient(135deg,var(--green) 0%,#15803d 60%,#166534 100%);
-  padding:36px 40px 32px;color:#fff;
+  padding:32px 36px 28px;color:#fff;flex-shrink:0;
 }
-.pg-hero-title{font-family:var(--font-brand);font-size:24px;font-weight:700;letter-spacing:.01em;margin-bottom:4px}
-.pg-hero-title-ar{font-family:var(--font-ar);font-size:18px;font-weight:600;
-  opacity:.85;direction:rtl;margin-bottom:10px}
+.pg-hero-title{font-family:var(--font-brand);font-size:22px;font-weight:700;margin-bottom:3px}
+.pg-hero-title-ar{font-family:var(--font-ar);font-size:16px;font-weight:600;
+  opacity:.85;direction:rtl;margin-bottom:8px}
 .pg-hero-sub{font-size:13px;opacity:.8;line-height:1.6}
-.pg-hero-badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.pg-hero-badges{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
 .badge{
-  display:inline-flex;align-items:center;gap:5px;padding:5px 12px;
+  display:inline-flex;align-items:center;gap:5px;padding:4px 11px;
   background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);
-  border-radius:var(--r-pill);font-size:12px;font-weight:500;color:#fff;
-  backdrop-filter:blur(8px);
+  border-radius:var(--r-pill);font-size:11.5px;font-weight:500;color:#fff;
 }
-.pg-body{padding:28px 36px;display:flex;flex-direction:column;gap:28px}
+.pg-body{padding:24px 32px;display:flex;flex-direction:column;gap:24px}
 .pg-section-title{
-  font-size:15px;font-weight:700;color:var(--slate900);margin-bottom:12px;
+  font-size:14.5px;font-weight:700;color:var(--slate900);margin-bottom:10px;
   display:flex;align-items:center;gap:8px;
 }
 .pg-section-title::after{content:'';flex:1;height:1px;background:var(--slate200)}
-.stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
 .stat-card{
   background:var(--white);border:1px solid var(--slate200);border-radius:var(--r-lg);
-  padding:18px 16px;text-align:center;box-shadow:var(--shadow-sm);
+  padding:16px;text-align:center;box-shadow:var(--shadow-sm);
 }
-.stat-val{font-family:var(--font-brand);font-size:22px;font-weight:700;color:var(--green);margin-bottom:4px}
-.stat-lbl{font-size:12px;color:var(--slate500);font-weight:500}
+.stat-val{font-family:var(--font-brand);font-size:20px;font-weight:700;color:var(--green);margin-bottom:3px}
+.stat-lbl{font-size:11.5px;color:var(--slate500);font-weight:500}
 .tag-cloud{display:flex;flex-wrap:wrap;gap:7px}
-.tag{
-  padding:5px 13px;background:var(--slate100);border-radius:var(--r-pill);
-  font-size:12.5px;color:var(--slate700);font-weight:500;
-}
-.prog-list{display:flex;flex-direction:column;gap:8px}
+.tag{padding:5px 12px;background:var(--slate100);border-radius:var(--r-pill);
+  font-size:12.5px;color:var(--slate700);font-weight:500}
+.prog-list{display:flex;flex-direction:column;gap:7px}
 .prog-item{
-  display:flex;align-items:center;gap:10px;padding:10px 14px;
+  display:flex;align-items:center;gap:10px;padding:9px 13px;
   background:var(--white);border:1px solid var(--slate200);border-radius:var(--r-md);
-  font-size:13.5px;color:var(--slate700);box-shadow:var(--shadow-sm);
+  font-size:13px;color:var(--slate700);box-shadow:var(--shadow-sm);
 }
-.prog-ico{font-size:16px;width:22px;text-align:center;flex-shrink:0}
+.prog-ico{font-size:15px;width:20px;text-align:center;flex-shrink:0}
 
 /* ══ PAGE: TEACHERS ══════════════════════════════════════════════════════ */
-.teachers-header{padding:24px 32px 0;flex-shrink:0}
-.teachers-title{font-size:20px;font-weight:700;color:var(--slate900);margin-bottom:4px}
-.teachers-title-ar{font-family:var(--font-ar);font-size:15px;color:var(--slate500);direction:rtl;margin-bottom:14px}
+.teachers-header{padding:20px 28px 0;flex-shrink:0}
+.teachers-title{font-size:19px;font-weight:700;color:var(--slate900);margin-bottom:3px}
+.teachers-title-ar{font-family:var(--font-ar);font-size:14px;color:var(--slate500);direction:rtl;margin-bottom:12px}
 .search-bar{
   width:100%;height:40px;padding:0 16px;border:1.5px solid var(--slate200);
   border-radius:var(--r-pill);font-family:var(--font);font-size:13.5px;
@@ -289,71 +275,110 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);background:var(--b
 .search-bar:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(27,107,47,.1)}
 .search-bar::placeholder{color:var(--slate400)}
 .teacher-grid{
-  padding:20px 32px;display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
-  gap:14px;overflow-y:auto;flex:1;align-content:start;
+  padding:16px 28px;display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(270px,1fr));
+  gap:12px;overflow-y:auto;flex:1;align-content:start;
 }
 .teacher-card{
   background:var(--white);border:1px solid var(--slate200);border-radius:var(--r-lg);
-  padding:18px;display:flex;align-items:flex-start;gap:14px;
+  padding:16px;display:flex;align-items:flex-start;gap:13px;
   box-shadow:var(--shadow-sm);transition:all var(--t);
 }
 .teacher-card:hover{box-shadow:var(--shadow-md);border-color:var(--slate300);transform:translateY(-1px)}
 .teacher-av{
-  width:44px;height:44px;border-radius:12px;flex-shrink:0;
+  width:42px;height:42px;border-radius:11px;flex-shrink:0;
   background:linear-gradient(135deg,var(--green),#15803d);
   display:flex;align-items:center;justify-content:center;
-  font-size:18px;font-weight:700;color:#fff;font-family:var(--font-brand);
+  font-size:17px;font-weight:700;color:#fff;font-family:var(--font-brand);
 }
-.teacher-name{font-size:14px;font-weight:700;color:var(--slate900);margin-bottom:3px}
-.teacher-dept{font-size:12.5px;font-weight:600;color:var(--green);margin-bottom:4px}
-.teacher-subjects{font-size:12px;color:var(--slate500);margin-bottom:4px}
+.teacher-name{font-size:13.5px;font-weight:700;color:var(--slate900);margin-bottom:2px}
+.teacher-dept{font-size:12px;font-weight:600;color:var(--green);margin-bottom:3px}
 .teacher-meta{font-size:11.5px;color:var(--slate400);line-height:1.6}
-.teacher-ext{display:inline-flex;align-items:center;gap:4px;margin-top:6px;
-  padding:3px 10px;background:var(--slate100);border-radius:var(--r-pill);
-  font-size:11.5px;color:var(--slate600);font-weight:500}
-.t-empty{padding:40px;text-align:center;color:var(--slate400);font-size:14px;line-height:1.7}
-.t-empty strong{display:block;font-size:16px;color:var(--slate600);margin-bottom:8px}
+.teacher-ext{display:inline-flex;align-items:center;gap:4px;margin-top:5px;
+  padding:3px 9px;background:var(--slate100);border-radius:var(--r-pill);
+  font-size:11px;color:var(--slate600);font-weight:500}
+.t-empty{padding:36px;text-align:center;color:var(--slate400);font-size:13.5px;line-height:1.7;grid-column:1/-1}
+.t-empty strong{display:block;font-size:15px;color:var(--slate600);margin-bottom:7px}
+
+/* ══ PAGE: EVENTS ════════════════════════════════════════════════════════ */
+.events-header{padding:20px 28px 0;flex-shrink:0}
+.events-title{font-size:19px;font-weight:700;color:var(--slate900);margin-bottom:3px}
+.events-title-ar{font-family:var(--font-ar);font-size:14px;color:var(--slate500);direction:rtl;margin-bottom:12px}
+.event-filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:2px}
+.ef-btn{
+  padding:5px 14px;border-radius:var(--r-pill);border:1.5px solid var(--slate200);
+  background:var(--white);font-family:var(--font);font-size:12.5px;font-weight:500;
+  color:var(--slate600);cursor:pointer;transition:all var(--t);
+}
+.ef-btn:hover{border-color:var(--slate300);color:var(--slate900)}
+.ef-btn.active{background:var(--green);border-color:var(--green);color:#fff}
+.event-list{
+  padding:16px 28px;display:flex;flex-direction:column;gap:12px;
+  overflow-y:auto;flex:1;
+}
+.event-card{
+  background:var(--white);border:1px solid var(--slate200);border-radius:var(--r-lg);
+  padding:18px 20px;display:flex;gap:16px;box-shadow:var(--shadow-sm);
+  transition:all var(--t);
+}
+.event-card:hover{box-shadow:var(--shadow-md);border-color:var(--slate300)}
+.event-date-badge{
+  flex-shrink:0;width:54px;text-align:center;
+  background:linear-gradient(135deg,var(--green),#15803d);
+  border-radius:var(--r-md);padding:10px 6px;color:#fff;
+}
+.edb-month{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;opacity:.85}
+.edb-day{font-size:20px;font-weight:700;font-family:var(--font-brand);line-height:1.1}
+.edb-tba{font-size:11px;font-weight:600;padding:6px 2px}
+.event-body{flex:1;min-width:0}
+.event-title{font-size:14px;font-weight:700;color:var(--slate900);margin-bottom:4px}
+.event-desc{font-size:12.5px;color:var(--slate600);line-height:1.65;margin-bottom:8px}
+.event-meta{display:flex;flex-wrap:wrap;gap:6px}
+.ev-tag{
+  display:inline-flex;align-items:center;gap:4px;padding:3px 10px;
+  border-radius:var(--r-pill);font-size:11px;font-weight:600;
+}
+.ev-tag.students{background:#eff6ff;color:#1d4ed8}
+.ev-tag.parents{background:#fef3c7;color:#b45309}
+.ev-tag.all{background:#f0fdf4;color:#15803d}
+.ev-tag.staff{background:#faf5ff;color:#7c3aed}
+.ev-tag.upcoming{background:#f0fdf4;color:#15803d}
+.ev-tag.completed{background:var(--slate100);color:var(--slate500)}
+.ev-tag.ongoing{background:#fef3c7;color:#b45309}
+.ev-time{display:flex;align-items:center;gap:4px;font-size:11.5px;color:var(--slate500)}
 
 /* ══ PAGE: CONTACT ═══════════════════════════════════════════════════════ */
-.contact-body{padding:28px 36px;display:flex;flex-direction:column;gap:20px;overflow-y:auto}
+.contact-body{padding:24px 32px;display:flex;flex-direction:column;gap:16px;overflow-y:auto;flex:1}
 .contact-card{
   background:var(--white);border:1px solid var(--slate200);border-radius:var(--r-lg);
-  padding:20px 24px;display:flex;align-items:center;gap:16px;
+  padding:18px 22px;display:flex;align-items:center;gap:14px;
   box-shadow:var(--shadow-sm);transition:all var(--t);text-decoration:none;
 }
 .contact-card:hover{box-shadow:var(--shadow-md);border-color:var(--slate300)}
 .contact-ico{
-  width:44px;height:44px;border-radius:12px;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;font-size:20px;
+  width:42px;height:42px;border-radius:11px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:19px;
 }
-.contact-ico.green{background:#f0fdf4}
-.contact-ico.blue{background:#eff6ff}
-.contact-ico.purple{background:#faf5ff}
-.contact-ico.teal{background:#f0fdfa}
-.contact-lbl{font-size:11px;font-weight:600;color:var(--slate400);text-transform:uppercase;
-  letter-spacing:.07em;margin-bottom:3px}
-.contact-val{font-size:15px;font-weight:600;color:var(--slate900)}
-.contact-val-sub{font-size:12px;color:var(--slate500);margin-top:1px}
-.hours-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.hours-card{
-  background:var(--white);border:1px solid var(--slate200);border-radius:var(--r-lg);
-  padding:16px 20px;box-shadow:var(--shadow-sm);
-}
-.hours-lbl{font-size:11px;font-weight:600;color:var(--slate400);text-transform:uppercase;
-  letter-spacing:.07em;margin-bottom:6px}
-.hours-val{font-size:14px;font-weight:600;color:var(--slate900)}
-.hours-days{font-size:12px;color:var(--slate500);margin-top:2px}
-.social-row{display:flex;flex-wrap:wrap;gap:10px}
+.contact-ico.green{background:#f0fdf4}.contact-ico.blue{background:#eff6ff}
+.contact-ico.purple{background:#faf5ff}.contact-ico.teal{background:#f0fdfa}
+.contact-lbl{font-size:10.5px;font-weight:600;color:var(--slate400);text-transform:uppercase;letter-spacing:.07em;margin-bottom:2px}
+.contact-val{font-size:14.5px;font-weight:600;color:var(--slate900)}
+.contact-val-sub{font-size:11.5px;color:var(--slate500);margin-top:1px}
+.hours-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hours-card{background:var(--white);border:1px solid var(--slate200);border-radius:var(--r-lg);padding:14px 18px;box-shadow:var(--shadow-sm)}
+.hours-lbl{font-size:10.5px;font-weight:600;color:var(--slate400);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px}
+.hours-val{font-size:13.5px;font-weight:600;color:var(--slate900)}
+.hours-days{font-size:11.5px;color:var(--slate500);margin-top:2px}
+.social-row{display:flex;flex-wrap:wrap;gap:8px}
 .social-btn{
-  display:inline-flex;align-items:center;gap:7px;padding:9px 16px;
+  display:inline-flex;align-items:center;gap:6px;padding:8px 14px;
   background:var(--white);border:1px solid var(--slate200);border-radius:var(--r-md);
   font-family:var(--font);font-size:13px;font-weight:500;color:var(--slate700);
   cursor:pointer;text-decoration:none;transition:all var(--t);box-shadow:var(--shadow-sm);
 }
-.social-btn:hover{border-color:var(--slate300);box-shadow:var(--shadow-md);color:var(--slate900)}
+.social-btn:hover{border-color:var(--slate300);box-shadow:var(--shadow-md)}
 
-/* ══ ESCALATION OVERLAY ══════════════════════════════════════════════════ */
+/* ══ ESCALATION ══════════════════════════════════════════════════════════ */
 #esc-ov{
   position:fixed;inset:0;background:rgba(255,255,255,.88);
   backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);
@@ -362,22 +387,21 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);background:var(--b
 }
 #esc-ov.show{opacity:1;pointer-events:all}
 .esc-card{
-  background:var(--white);border-radius:24px;padding:40px 48px;max-width:460px;
+  background:var(--white);border-radius:22px;padding:36px 44px;max-width:440px;
   width:90%;text-align:center;box-shadow:var(--shadow-xl),0 0 0 1px rgba(0,0,0,.04);
   animation:esc-in .35s cubic-bezier(.34,1.56,.64,1)
 }
 @keyframes esc-in{from{transform:scale(.88);opacity:0}to{transform:scale(1);opacity:1}}
-.esc-ico{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#fef3c7,#fde68a);
-  margin:0 auto 18px;display:flex;align-items:center;justify-content:center;font-size:26px}
-.esc-title{font-size:19px;font-weight:700;color:var(--slate900);margin-bottom:5px}
-.esc-title-ar{font-family:var(--font-ar);font-size:15px;color:var(--slate600);direction:rtl;margin-bottom:12px}
-.esc-body{font-size:13.5px;color:var(--slate500);line-height:1.75;margin-bottom:4px}
-.esc-body-ar{font-family:var(--font-ar);font-size:12.5px;color:var(--slate400);direction:rtl;
-  line-height:1.9;margin-bottom:24px}
+.esc-ico{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#fef3c7,#fde68a);
+  margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:24px}
+.esc-title{font-size:18px;font-weight:700;color:var(--slate900);margin-bottom:4px}
+.esc-title-ar{font-family:var(--font-ar);font-size:14px;color:var(--slate600);direction:rtl;margin-bottom:10px}
+.esc-body{font-size:13px;color:var(--slate500);line-height:1.75;margin-bottom:4px}
+.esc-body-ar{font-family:var(--font-ar);font-size:12px;color:var(--slate400);direction:rtl;line-height:1.9;margin-bottom:22px}
 .esc-back{
-  display:inline-flex;align-items:center;gap:7px;padding:11px 24px;
+  display:inline-flex;align-items:center;gap:7px;padding:10px 22px;
   background:var(--green);color:#fff;border:none;border-radius:var(--r-pill);
-  font-family:var(--font);font-size:13.5px;font-weight:600;cursor:pointer;
+  font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;
   transition:all var(--t);box-shadow:0 4px 14px rgba(27,107,47,.3);
 }
 .esc-back:hover{background:#1f7a36;transform:translateY(-1px)}
@@ -387,7 +411,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);background:var(--b
   z-index:200;display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none}
 .toast{background:var(--slate900);color:#fff;padding:9px 18px;border-radius:var(--r-pill);
   font-size:12.5px;font-weight:500;box-shadow:var(--shadow-lg);
-  animation:t-in .22s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;pointer-events:all}
+  animation:t-in .22s cubic-bezier(.34,1.56,.64,1);white-space:nowrap}
 .toast.err{background:#ef4444}.toast.ok{background:#059669}
 @keyframes t-in{from{opacity:0;transform:translateY(8px) scale(.95)}to{opacity:1;transform:none}}
 
@@ -403,7 +427,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);background:var(--b
     <img class="tb-logo" src="/logo.png" alt="NAWIS" onerror="this.style.display='none'"/>
     <div class="tb-sep"></div>
     <div class="tb-school">
-      <div class="tb-school-en">Al Wurood International School</div>
+      <div class="tb-school-en">Al Nurood International School</div>
       <div class="tb-school-ar">مدرسة النورود الدولية · جدة</div>
     </div>
   </div>
@@ -442,23 +466,15 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);background:var(--b
       <button class="nav-item" data-page="teachers" onclick="showPage('teachers')">
         <span class="nav-ico">👩‍🏫</span><span>Teachers</span>
       </button>
+      <button class="nav-item" data-page="events" onclick="showPage('events')">
+        <span class="nav-ico">📅</span><span>Events</span>
+      </button>
       <button class="nav-item" data-page="contact" onclick="showPage('contact')">
         <span class="nav-ico">📞</span><span>Contact Us</span>
       </button>
-      <div class="sb-divider"></div>
-      <div class="sb-section-lbl">Quick Ask</div>
-      <button class="nav-item" onclick="quickAsk('What are the school timings?')">
-        <span class="nav-ico">⏰</span><span>School Timings</span>
-      </button>
-      <button class="nav-item" onclick="quickAsk('How do I apply for admission?')">
-        <span class="nav-ico">📋</span><span>Admissions</span>
-      </button>
-      <button class="nav-item" onclick="quickAsk('What transport options are available?')">
-        <span class="nav-ico">🚌</span><span>Transport</span>
-      </button>
     </nav>
     <div class="sb-footer">
-      <div>NAWIS AI &nbsp;·&nbsp; v3.0</div>
+      <div>NAWIS AI &nbsp;·&nbsp; v4.0</div>
       <div>Powered by Groq &amp; Llama 3</div>
       <div style="margin-top:4px"><a href="https://alwuroodschool.org" target="_blank">alwuroodschool.org</a></div>
     </div>
@@ -477,38 +493,28 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);background:var(--b
             <svg class="globe-svg" viewBox="-62 -62 124 124" xmlns="http://www.w3.org/2000/svg">
               <defs>
                 <radialGradient id="gIdle" cx="35%" cy="28%" r="65%">
-                  <stop offset="0%"   stop-color="#a7f3d0"/>
-                  <stop offset="20%"  stop-color="#4ade80"/>
-                  <stop offset="40%"  stop-color="#22c55e"/>
-                  <stop offset="65%"  stop-color="#16a34a"/>
+                  <stop offset="0%" stop-color="#a7f3d0"/><stop offset="20%" stop-color="#4ade80"/>
+                  <stop offset="40%" stop-color="#22c55e"/><stop offset="65%" stop-color="#16a34a"/>
                   <stop offset="100%" stop-color="#14532d"/>
                 </radialGradient>
                 <radialGradient id="gListen" cx="35%" cy="28%" r="65%">
-                  <stop offset="0%"   stop-color="#bfdbfe"/>
-                  <stop offset="20%"  stop-color="#60a5fa"/>
-                  <stop offset="42%"  stop-color="#3b82f6"/>
-                  <stop offset="68%"  stop-color="#2563eb"/>
+                  <stop offset="0%" stop-color="#bfdbfe"/><stop offset="20%" stop-color="#60a5fa"/>
+                  <stop offset="42%" stop-color="#3b82f6"/><stop offset="68%" stop-color="#2563eb"/>
                   <stop offset="100%" stop-color="#1e3a8a"/>
                 </radialGradient>
                 <radialGradient id="gThink" cx="35%" cy="28%" r="65%">
-                  <stop offset="0%"   stop-color="#fef3c7"/>
-                  <stop offset="20%"  stop-color="#fcd34d"/>
-                  <stop offset="42%"  stop-color="#f59e0b"/>
-                  <stop offset="68%"  stop-color="#d97706"/>
+                  <stop offset="0%" stop-color="#fef3c7"/><stop offset="20%" stop-color="#fcd34d"/>
+                  <stop offset="42%" stop-color="#f59e0b"/><stop offset="68%" stop-color="#d97706"/>
                   <stop offset="100%" stop-color="#78350f"/>
                 </radialGradient>
                 <radialGradient id="gSpeak" cx="35%" cy="28%" r="65%">
-                  <stop offset="0%"   stop-color="#d1fae5"/>
-                  <stop offset="20%"  stop-color="#6ee7b7"/>
-                  <stop offset="42%"  stop-color="#34d399"/>
-                  <stop offset="68%"  stop-color="#10b981"/>
+                  <stop offset="0%" stop-color="#d1fae5"/><stop offset="20%" stop-color="#6ee7b7"/>
+                  <stop offset="42%" stop-color="#34d399"/><stop offset="68%" stop-color="#10b981"/>
                   <stop offset="100%" stop-color="#064e3b"/>
                 </radialGradient>
                 <radialGradient id="gEsc" cx="35%" cy="28%" r="65%">
-                  <stop offset="0%"   stop-color="#fee2e2"/>
-                  <stop offset="20%"  stop-color="#fca5a5"/>
-                  <stop offset="42%"  stop-color="#ef4444"/>
-                  <stop offset="68%"  stop-color="#dc2626"/>
+                  <stop offset="0%" stop-color="#fee2e2"/><stop offset="20%" stop-color="#fca5a5"/>
+                  <stop offset="42%" stop-color="#ef4444"/><stop offset="68%" stop-color="#dc2626"/>
                   <stop offset="100%" stop-color="#7f1d1d"/>
                 </radialGradient>
                 <clipPath id="gc"><circle r="54"/></clipPath>
@@ -520,15 +526,9 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);background:var(--b
                 <line x1="-54" y1="0" x2="54" y2="0"/>
               </g>
               <g clip-path="url(#gc)" fill="none" stroke="rgba(255,255,255,.32)" stroke-width="1.1">
-                <ellipse ry="54" cx="0" cy="0">
-                  <animate attributeName="rx" values="1;54;1" dur="9s" repeatCount="indefinite" calcMode="linear"/>
-                </ellipse>
-                <ellipse ry="54" cx="0" cy="0">
-                  <animate attributeName="rx" values="1;54;1" dur="9s" repeatCount="indefinite" calcMode="linear" begin="-3s"/>
-                </ellipse>
-                <ellipse ry="54" cx="0" cy="0">
-                  <animate attributeName="rx" values="1;54;1" dur="9s" repeatCount="indefinite" calcMode="linear" begin="-6s"/>
-                </ellipse>
+                <ellipse ry="54"><animate attributeName="rx" values="1;54;1" dur="9s" repeatCount="indefinite" calcMode="linear"/></ellipse>
+                <ellipse ry="54"><animate attributeName="rx" values="1;54;1" dur="9s" repeatCount="indefinite" calcMode="linear" begin="-3s"/></ellipse>
+                <ellipse ry="54"><animate attributeName="rx" values="1;54;1" dur="9s" repeatCount="indefinite" calcMode="linear" begin="-6s"/></ellipse>
               </g>
               <ellipse cx="-14" cy="-18" rx="19" ry="12" fill="rgba(255,255,255,.2)" transform="rotate(-20,-14,-18)"/>
             </svg>
@@ -549,7 +549,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);background:var(--b
           </h2>
           <p class="w-sub">
             Ask me anything about NAWIS — admissions, curriculum, facilities, and more.
-            <span class="w-sub-ar">اسألني عن القبول، المناهج، المرافق، وأي شيء يتعلق بمدرسة النورود</span>
+            <span class="w-sub-ar">اسألني عن القبول والمناهج والمرافق وأي شيء يخص مدرسة النورود</span>
           </p>
           <div class="chips" id="chips"></div>
         </div>
@@ -577,66 +577,63 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);background:var(--b
     <section id="page-about" class="page">
       <div class="page-scroll">
         <div class="pg-hero">
-          <div class="pg-hero-title">New Al Wurood International School</div>
+          <div class="pg-hero-title">New Al Nurood International School</div>
           <div class="pg-hero-title-ar">مدرسة النورود الدولية الجديدة</div>
           <div class="pg-hero-sub">Jeddah, Kingdom of Saudi Arabia &nbsp;·&nbsp; CBSE Curriculum &nbsp;·&nbsp; Pre-School to Grade 12</div>
           <div class="pg-hero-badges">
             <div class="badge">🎓 CBSE Affiliated</div>
             <div class="badge">📍 Jeddah, KSA</div>
             <div class="badge">🏫 KG – Grade 12</div>
-            <div class="badge">🔬 Science & Commerce Streams</div>
+            <div class="badge">🔬 Science &amp; Commerce</div>
           </div>
         </div>
         <div class="pg-body">
           <div>
             <div class="pg-section-title">Key Facts</div>
             <div class="stat-grid">
-              <div class="stat-card"><div class="stat-val">KG–12</div><div class="stat-lbl">Grades Offered</div></div>
-              <div class="stat-card"><div class="stat-val">CBSE</div><div class="stat-lbl">Curriculum Board</div></div>
+              <div class="stat-card"><div class="stat-val">KG–12</div><div class="stat-lbl">Grades</div></div>
+              <div class="stat-card"><div class="stat-val">CBSE</div><div class="stat-lbl">Board</div></div>
               <div class="stat-card"><div class="stat-val">2</div><div class="stat-lbl">Senior Streams</div></div>
-              <div class="stat-card"><div class="stat-val">8:30</div><div class="stat-lbl">School Starts (AM)</div></div>
+              <div class="stat-card"><div class="stat-val">8:30</div><div class="stat-lbl">Start Time AM</div></div>
             </div>
           </div>
           <div>
             <div class="pg-section-title">Leadership</div>
-            <div class="teacher-card" style="max-width:380px">
+            <div class="teacher-card" style="max-width:360px">
               <div class="teacher-av">B</div>
               <div>
                 <div class="teacher-name">Mrs. Bhuvaneshwari Subramaniam</div>
                 <div class="teacher-dept">Principal</div>
-                <div class="teacher-meta">Ext: 100 &nbsp;·&nbsp; admin@alwuroodschool.org</div>
+                <div class="teacher-meta">admin@alwuroodschool.org &nbsp;·&nbsp; Ext 100</div>
               </div>
             </div>
           </div>
           <div>
             <div class="pg-section-title">Curriculum</div>
-            <p style="font-size:13.5px;color:var(--slate600);line-height:1.75;margin-bottom:12px">
-              NAWIS follows the <strong>Central Board of Secondary Education (CBSE)</strong> curriculum — one of India's most rigorous and internationally respected educational boards. Grades 9–10 prepare students for the Grade 10 board examination, while Grades 11–12 offer <strong>Science</strong> and <strong>Commerce</strong> streams leading to the Grade 12 board exams.
+            <p style="font-size:13px;color:var(--slate600);line-height:1.75">
+              NAWIS follows the <strong>Central Board of Secondary Education (CBSE)</strong> curriculum.
+              Grades 11–12 offer <strong>Science</strong> and <strong>Commerce</strong> streams leading to board examinations.
             </p>
           </div>
           <div>
             <div class="pg-section-title">Facilities</div>
             <div class="tag-cloud">
-              <span class="tag">🔬 Science Lab</span>
-              <span class="tag">📐 Math Lab</span>
-              <span class="tag">🗣️ English Language Lab</span>
-              <span class="tag">📚 Library</span>
-              <span class="tag">🍽️ Cafeteria</span>
-              <span class="tag">🏥 Nurse Station</span>
-              <span class="tag">🤖 Robotics Lab</span>
-              <span class="tag">🥽 VR Lab</span>
-              <span class="tag">📺 DigiClass Smart Rooms</span>
+              <span class="tag">🔬 Science Lab</span><span class="tag">📐 Math Lab</span>
+              <span class="tag">🗣️ Language Lab</span><span class="tag">📚 Library</span>
+              <span class="tag">🍽️ Cafeteria</span><span class="tag">🏥 Nurse Station</span>
+              <span class="tag">🤖 Robotics Lab</span><span class="tag">🥽 VR Lab</span>
+              <span class="tag">📺 DigiClass Rooms</span>
             </div>
           </div>
           <div>
-            <div class="pg-section-title">Programmes &amp; Activities</div>
+            <div class="pg-section-title">Programmes</div>
             <div class="prog-list">
               <div class="prog-item"><span class="prog-ico">🎤</span>Gavel Club — Public Speaking &amp; Leadership</div>
               <div class="prog-item"><span class="prog-ico">🎭</span>Visual Performance Arts</div>
               <div class="prog-item"><span class="prog-ico">⚜️</span>Scouts and Guides</div>
               <div class="prog-item"><span class="prog-ico">🌍</span>Model United Nations (MUN)</div>
               <div class="prog-item"><span class="prog-ico">⚽</span>B.E.S.T Sports Programme</div>
-              <div class="prog-item"><span class="prog-ico">🤖</span>NAWIS Robotics &amp; VR Lab</div>
+              <div class="prog-item"><span class="prog-ico">🤖</span>Robotics &amp; VR Lab</div>
               <div class="prog-item"><span class="prog-ico">🏆</span>Academic Olympiads</div>
               <div class="prog-item"><span class="prog-ico">🎙️</span>NAWIS Podcast</div>
             </div>
@@ -649,55 +646,61 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);background:var(--b
     <section id="page-teachers" class="page">
       <div class="teachers-header">
         <div class="teachers-title">Teacher Directory</div>
-        <div class="teachers-title-ar">دليل المعلمين</div>
+        <div class="teachers-title-ar">دليل أعضاء هيئة التدريس</div>
         <input class="search-bar" id="teacher-search" placeholder="Search by name, subject or department…" oninput="filterTeachers()"/>
       </div>
       <div class="teacher-grid" id="teacher-grid">
-        <div class="t-empty" style="grid-column:1/-1">
-          <strong>Loading teacher directory…</strong>
-          Fetching from school data.
+        <div class="t-empty"><strong>Loading…</strong></div>
+      </div>
+    </section>
+
+    <!-- EVENTS PAGE -->
+    <section id="page-events" class="page">
+      <div class="events-header">
+        <div class="events-title">School Events</div>
+        <div class="events-title-ar">الفعاليات والأنشطة المدرسية</div>
+        <div class="event-filters" id="event-filters">
+          <button class="ef-btn active" data-filter="all" onclick="filterEvents('all',this)">All</button>
+          <button class="ef-btn" data-filter="students" onclick="filterEvents('students',this)">Students</button>
+          <button class="ef-btn" data-filter="parents" onclick="filterEvents('parents',this)">Parents</button>
         </div>
+      </div>
+      <div class="event-list" id="event-list">
+        <div class="t-empty"><strong>Loading events…</strong></div>
       </div>
     </section>
 
     <!-- CONTACT PAGE -->
     <section id="page-contact" class="page">
+      <div class="pg-hero" style="flex-shrink:0">
+        <div class="pg-hero-title">Contact Us</div>
+        <div class="pg-hero-title-ar">تواصل معنا</div>
+        <div class="pg-hero-sub">We're here to help — Sunday to Thursday</div>
+      </div>
       <div class="contact-body">
-        <div style="margin-bottom:4px">
-          <div style="font-size:20px;font-weight:700;color:var(--slate900)">Contact Us</div>
-          <div style="font-family:var(--font-ar);font-size:15px;color:var(--slate500);direction:rtl;margin-top:3px">تواصل معنا</div>
-        </div>
         <a class="contact-card" href="tel:+966552730945">
           <div class="contact-ico green">📞</div>
-          <div>
-            <div class="contact-lbl">Phone</div>
-            <div class="contact-val">+966 55 273 0945</div>
-            <div class="contact-val-sub">Tap to call</div>
-          </div>
+          <div><div class="contact-lbl">Phone</div>
+          <div class="contact-val">+966 55 273 0945</div>
+          <div class="contact-val-sub">Tap to call</div></div>
         </a>
         <a class="contact-card" href="mailto:admin@alwuroodschool.org">
           <div class="contact-ico blue">✉️</div>
-          <div>
-            <div class="contact-lbl">Email</div>
-            <div class="contact-val">admin@alwuroodschool.org</div>
-            <div class="contact-val-sub">General enquiries &amp; admissions</div>
-          </div>
+          <div><div class="contact-lbl">Email</div>
+          <div class="contact-val">admin@alwuroodschool.org</div>
+          <div class="contact-val-sub">Admissions &amp; general enquiries</div></div>
         </a>
         <a class="contact-card" href="https://wa.me/966552730945" target="_blank">
           <div class="contact-ico teal">💬</div>
-          <div>
-            <div class="contact-lbl">WhatsApp</div>
-            <div class="contact-val">+966 55 273 0945</div>
-            <div class="contact-val-sub">Chat with the school office</div>
-          </div>
+          <div><div class="contact-lbl">WhatsApp</div>
+          <div class="contact-val">+966 55 273 0945</div>
+          <div class="contact-val-sub">Chat with the school office</div></div>
         </a>
         <a class="contact-card" href="https://alwuroodschool.org" target="_blank">
           <div class="contact-ico purple">🌐</div>
-          <div>
-            <div class="contact-lbl">Website</div>
-            <div class="contact-val">alwuroodschool.org</div>
-            <div class="contact-val-sub">Enroll at alwuroodschool.org/enroll.php</div>
-          </div>
+          <div><div class="contact-lbl">Website</div>
+          <div class="contact-val">alwuroodschool.org</div>
+          <div class="contact-val-sub">Enrol at alwuroodschool.org/enroll.php</div></div>
         </a>
         <div class="hours-grid">
           <div class="hours-card">
@@ -712,7 +715,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);background:var(--b
           </div>
         </div>
         <div>
-          <div style="font-size:13px;font-weight:600;color:var(--slate500);margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em">Follow Us</div>
+          <div style="font-size:12px;font-weight:600;color:var(--slate500);margin-bottom:9px;text-transform:uppercase;letter-spacing:.06em">Follow Us</div>
           <div class="social-row">
             <a class="social-btn" href="https://instagram.com/newalwurood" target="_blank">📸 Instagram</a>
             <a class="social-btn" href="https://twitter.com/newalwurood" target="_blank">🐦 Twitter / X</a>
@@ -724,7 +727,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);background:var(--b
     </section>
 
   </main>
-</div><!-- #body -->
+</div>
 
 <!-- ══ ESCALATION ═════════════════════════════════════════════════════════ -->
 <div id="esc-ov">
@@ -732,59 +735,49 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);background:var(--b
     <div class="esc-ico">🔔</div>
     <h3 class="esc-title">Connecting you with our staff</h3>
     <div class="esc-title-ar">جاري التواصل مع فريقنا</div>
-    <p class="esc-body">Our team has been notified and will assist you shortly at the reception.</p>
+    <p class="esc-body">Our team has been notified and will assist you shortly at reception.</p>
     <p class="esc-body-ar">تم إخطار فريقنا وسيساعدك قريباً عند الاستقبال.</p>
     <button class="esc-back" onclick="closeEsc()">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-        <polyline points="15 18 9 12 15 6"/>
-      </svg>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
       Back to NAWIS AI
     </button>
   </div>
 </div>
-
-<!-- ══ TOASTS ══════════════════════════════════════════════════════════════ -->
 <div id="toasts"></div>
 
 </div><!-- #app -->
 
 <script>
 /* ════════════════════════════════════════════════════════════════
-   BILINGUAL STATE LABELS
+   STATE LABELS
 ════════════════════════════════════════════════════════════════ */
 const STATES = {
-  idle      : { en:'Tap to speak',              ar:'انقر للتحدث' },
-  listening : { en:'Listening…',                ar:'جارٍ الاستماع…' },
-  thinking  : { en:'Thinking…',                 ar:'جارٍ التفكير…' },
-  speaking  : { en:'Speaking…',                 ar:'جارٍ الكلام…' },
+  idle      : { en:'Tap to speak',               ar:'انقر للتحدث' },
+  listening : { en:'Listening…',                 ar:'جارٍ الاستماع…' },
+  thinking  : { en:'Thinking…',                  ar:'جارٍ التفكير…' },
+  speaking  : { en:'Speaking…',                  ar:'جارٍ الكلام…' },
   escalating: { en:'Connecting you with staff…', ar:'نوصلك بالموظفين…' },
 };
 
 const CHIPS = [
-  { i:'📋', en:'Admission process',  ar:'إجراءات القبول',     q:'What is the admission process at NAWIS?' },
-  { i:'⏰', en:'School timings',     ar:'مواعيد المدرسة',      q:'What are the school timings?' },
-  { i:'📚', en:'CBSE curriculum',    ar:'منهج CBSE',           q:'Tell me about the CBSE curriculum.' },
-  { i:'🚌', en:'Transport & buses',  ar:'النقل والحافلات',      q:'How does the school transport work?' },
-  { i:'🏫', en:'Facilities',         ar:'مرافق المدرسة',        q:'What facilities does NAWIS have?' },
-  { i:'🎭', en:'Programmes',         ar:'الأنشطة والبرامج',     q:'What extra-curricular programmes are available?' },
-  { i:'📝', en:'Exams & results',    ar:'الامتحانات والنتائج',  q:'How are exams and results handled at NAWIS?' },
-  { i:'📞', en:'Contact info',       ar:'معلومات التواصل',      q:'How can I contact NAWIS?' },
+  { i:'📋', en:'Admission process',  ar:'إجراءات القبول',    q:'What is the admission process at NAWIS?' },
+  { i:'⏰', en:'School timings',     ar:'مواعيد الدراسة',    q:'What are the school timings?' },
+  { i:'📚', en:'CBSE curriculum',    ar:'منهج CBSE',          q:'Tell me about the CBSE curriculum at NAWIS.' },
+  { i:'🚌', en:'Transport & buses',  ar:'النقل والحافلات',   q:'How does the school transport work?' },
+  { i:'🏫', en:'Facilities',         ar:'مرافق المدرسة',     q:'What facilities does NAWIS have?' },
+  { i:'🎭', en:'Programmes',         ar:'الأنشطة والبرامج',  q:'What extra-curricular programmes are available?' },
+  { i:'📝', en:'Exams & results',    ar:'الامتحانات والنتائج', q:'How are exams and results handled at NAWIS?' },
+  { i:'📞', en:'Contact info',       ar:'معلومات التواصل',   q:'How can I contact NAWIS?' },
 ];
 
 /* ════════════════════════════════════════════════════════════════
    STATE
 ════════════════════════════════════════════════════════════════ */
-const app    = document.getElementById('app');
-let busy     = false;
-let isRec    = false;
-let muted    = false;
-let curAudio = null;
-let curUtter = null;
-let mediaRec = null;
-let audioChunks = [];
-let recCleanup  = null;
-let skipTranscribe = false;
-let allTeachers  = [];
+const app = document.getElementById('app');
+let busy = false, isRec = false, muted = false;
+let curAudio = null, curUtter = null, mediaRec = null;
+let audioChunks = [], recCleanup = null, skipTranscribe = false;
+let allTeachers = [], allEvents = [];
 
 function $(id){ return document.getElementById(id); }
 
@@ -793,38 +786,34 @@ function setState(s){
   const st = STATES[s] || STATES.idle;
   $('gl-en').textContent = st.en;
   $('gl-ar').textContent = st.ar;
-  const map = { idle:'idle', listening:'listen', thinking:'think', speaking:'speak', escalating:'error' };
-  fetch('/esp32/'+(map[s]||'idle'), {method:'POST'}).catch(()=>{});
+  fetch('/esp32/'+(({idle:'idle',listening:'listen',thinking:'think',speaking:'speak',escalating:'error'})[s]||'idle'),
+    {method:'POST'}).catch(()=>{});
 }
 
 /* ════════════════════════════════════════════════════════════════
    PAGE NAVIGATION
 ════════════════════════════════════════════════════════════════ */
 function showPage(id){
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item[data-page]').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item[data-page]').forEach(n=>n.classList.remove('active'));
   $('page-'+id)?.classList.add('active');
   document.querySelector(`.nav-item[data-page="${id}"]`)?.classList.add('active');
-  if(id === 'teachers') loadTeachers();
-}
-
-function quickAsk(q){
-  showPage('chat');
-  setTimeout(() => sendText(q), 80);
+  if(id==='teachers') loadTeachers();
+  if(id==='events')   loadEvents();
 }
 
 /* ════════════════════════════════════════════════════════════════
    CHIPS
 ════════════════════════════════════════════════════════════════ */
 function buildChips(){
-  const g = $('chips'); g.innerHTML = '';
-  CHIPS.forEach(({ i, en, ar, q }) => {
+  const g = $('chips'); g.innerHTML='';
+  CHIPS.forEach(({i,en,ar,q})=>{
     const b = document.createElement('button');
-    b.className = 'chip';
-    b.innerHTML = `<span style="font-size:15px">${i}</span>
+    b.className='chip';
+    b.innerHTML=`<span style="font-size:15px">${i}</span>
       <span class="chip-en">${en}</span>
       <span class="chip-ar">${ar}</span>`;
-    b.onclick = () => sendText(q);
+    b.onclick=()=>sendText(q);
     g.appendChild(b);
   });
 }
@@ -833,85 +822,65 @@ function buildChips(){
    CHAT UI
 ════════════════════════════════════════════════════════════════ */
 function showChat(){
-  $('welcome').style.display = 'none';
-  $('messages').style.display = 'flex';
+  $('welcome').style.display='none';
+  $('messages').style.display='flex';
 }
-
-function addMsg(role, text){
+function addMsg(role,text){
   showChat();
-  const msgs = $('messages');
-  const row  = document.createElement('div');
-  row.className = `msg msg-${role}`;
-  if(role === 'ai'){
-    const av = document.createElement('div'); av.className='av';
-    av.innerHTML = '<img src="/logo.png" alt="N">';
-    row.appendChild(av);
+  const msgs=$('messages');
+  const row=document.createElement('div'); row.className=`msg msg-${role}`;
+  if(role==='ai'){
+    const av=document.createElement('div'); av.className='av';
+    av.innerHTML='<img src="/logo.png" alt="N">'; row.appendChild(av);
   }
-  const b = document.createElement('div');
-  b.className = `bubble bubble-${role}`;
-  b.textContent = text;
+  const b=document.createElement('div'); b.className=`bubble bubble-${role}`;
+  b.textContent=text;
   if(/[\u0600-\u06FF]/.test(text)){
-    b.setAttribute('dir','rtl');
-    b.style.fontFamily = 'Cairo, system-ui, sans-serif';
+    b.setAttribute('dir','rtl'); b.style.fontFamily='Cairo,system-ui,sans-serif';
   }
-  row.appendChild(b);
-  msgs.appendChild(row);
-  scrollDown();
+  row.appendChild(b); msgs.appendChild(row); scrollDown();
 }
-
 function addTyping(){
-  showChat();
-  const msgs = $('messages');
-  const row  = document.createElement('div');
-  row.className = 'msg msg-ai'; row.id = 'typing-row';
-  const av = document.createElement('div'); av.className = 'av';
-  av.innerHTML = '<img src="/logo.png" alt="N">';
-  const ind = document.createElement('div'); ind.className = 'typing';
-  ind.innerHTML = '<div class="tdot"></div><div class="tdot"></div><div class="tdot"></div>';
-  row.appendChild(av); row.appendChild(ind);
-  msgs.appendChild(row); scrollDown();
+  showChat(); const msgs=$('messages');
+  const row=document.createElement('div'); row.className='msg msg-ai'; row.id='typing-row';
+  const av=document.createElement('div'); av.className='av'; av.innerHTML='<img src="/logo.png" alt="N">';
+  const ind=document.createElement('div'); ind.className='typing';
+  ind.innerHTML='<div class="tdot"></div><div class="tdot"></div><div class="tdot"></div>';
+  row.appendChild(av); row.appendChild(ind); msgs.appendChild(row); scrollDown();
 }
 function removeTyping(){ $('typing-row')?.remove(); }
-function scrollDown(){
-  const ca = $('chat-area');
-  if(ca) requestAnimationFrame(() => ca.scrollTop = ca.scrollHeight);
-}
+function scrollDown(){ const ca=$('chat-area'); if(ca) requestAnimationFrame(()=>ca.scrollTop=ca.scrollHeight); }
 
 /* ════════════════════════════════════════════════════════════════
    SEND
 ════════════════════════════════════════════════════════════════ */
 async function sendText(text){
-  const t = text.trim();
-  if(!t || busy) return;
-  busy = true;
-  $('user-input').value = '';
+  const t=text.trim();
+  if(!t||busy) return;
+  busy=true;
+  $('user-input').value='';
   stopSpeaking();
   showPage('chat');
-  addMsg('user', t);
+  addMsg('user',t);
   setState('thinking');
   addTyping();
-
-  const langHint = /[\u0600-\u06FF]/.test(t) ? 'ar' : 'en';
-
+  const langHint=/[\u0600-\u06FF]/.test(t)?'ar':'en';
   try{
-    const r = await fetch('/chat', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ message:t, language:langHint }),
+    const r=await fetch('/chat',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({message:t,language:langHint}),
     });
     if(!r.ok) throw new Error('HTTP '+r.status);
-    const d = await r.json();
-    removeTyping();
-    addMsg('ai', d.reply);
+    const d=await r.json();
+    removeTyping(); addMsg('ai',d.reply);
     if(d.escalate){ setState('escalating'); showEsc(); }
     else { await speakText(d.reply, langHint); }
   }catch(e){
     removeTyping(); setState('idle');
     toast('Connection issue — please try again.','err');
     console.error(e);
-  }finally{ busy = false; }
+  }finally{ busy=false; }
 }
-
 function sendMessage(){ const v=$('user-input').value.trim(); if(v) sendText(v); }
 function onEnter(e){ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); sendMessage(); } }
 
@@ -919,329 +888,273 @@ function onEnter(e){ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); sendM
    MUTE
 ════════════════════════════════════════════════════════════════ */
 function toggleMute(){
-  muted = !muted;
-  const btn = $('mute-btn');
-  btn.classList.toggle('muted', muted);
-  btn.title = muted ? 'Unmute voice' : 'Mute voice';
-  $('mute-ico').innerHTML = muted
-    ? '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>'
-    : '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>';
+  muted=!muted;
+  $('mute-btn').classList.toggle('muted',muted);
+  $('mute-btn').title=muted?'Unmute voice':'Mute voice';
+  $('mute-ico').innerHTML=muted
+    ?'<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>'
+    :'<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>';
   if(muted) stopSpeaking();
 }
 
 /* ════════════════════════════════════════════════════════════════
-   TTS — edge-tts backend FIRST (Microsoft Neural voices),
-   then browser speechSynthesis as fallback.
-   On a Windows laptop, BOTH give natural female voices.
-   edge-tts uses Microsoft Emma (EN) and Zariyah (AR) by default.
+   TTS — edge-tts backend first (Microsoft Neural), then browser
 ════════════════════════════════════════════════════════════════ */
 function stopSpeaking(){
-  if(curAudio){ try{ curAudio.pause(); }catch(_){} curAudio = null; }
-  if(curUtter){ try{ window.speechSynthesis?.cancel(); }catch(_){} curUtter = null; }
+  if(curAudio){ try{curAudio.pause();}catch(_){} curAudio=null; }
+  if(curUtter){ try{window.speechSynthesis?.cancel();}catch(_){} curUtter=null; }
 }
-
-async function speakText(text, langCode='en'){
-  if(!text?.trim() || muted){ setState('idle'); return; }
+async function speakText(text,langCode='en'){
+  if(!text?.trim()||muted){ setState('idle'); return; }
   setState('speaking');
-
-  /* Try edge-tts backend first — Microsoft Emma/Zariyah Neural, natural female voices */
-  const backendOk = await speakViaBackend(text, langCode);
-  if(!backendOk){
-    /* Fallback: browser synthesis (Microsoft Aria/Jenny on Windows Chrome/Edge) */
-    await speakViaBrowser(text, langCode);
-  }
+  const ok=await speakViaBackend(text,langCode);
+  if(!ok) await speakViaBrowser(text,langCode);
   setState('idle');
 }
-
-async function speakViaBackend(text, langCode){
+async function speakViaBackend(text,langCode){
   try{
-    const r = await fetch('/tts?' + new URLSearchParams({
-      text: text.slice(0, 600),
-      lang: langCode,
-    }), { signal: AbortSignal.timeout(14000) });
-
-    if(!r.ok) throw new Error('TTS backend '+r.status);
-    const blob = await r.blob();
-    if(blob.size < 200) throw new Error('empty audio');
-
-    const url   = URL.createObjectURL(blob);
-    const audio = new Audio(url);
-    curAudio = audio;
-
-    return new Promise(resolve => {
-      audio.onended = () => { URL.revokeObjectURL(url); curAudio = null; resolve(true); };
-      audio.onerror = () => { URL.revokeObjectURL(url); curAudio = null; resolve(false); };
-      audio.play().catch(() => resolve(false));
+    const r=await fetch('/tts?'+new URLSearchParams({text:text.slice(0,600),lang:langCode}),
+      {signal:AbortSignal.timeout(14000)});
+    if(!r.ok) throw new Error('TTS '+r.status);
+    const blob=await r.blob();
+    if(blob.size<200) throw new Error('empty');
+    const url=URL.createObjectURL(blob);
+    const audio=new Audio(url); curAudio=audio;
+    return new Promise(resolve=>{
+      audio.onended=()=>{ URL.revokeObjectURL(url); curAudio=null; resolve(true); };
+      audio.onerror=()=>{ URL.revokeObjectURL(url); curAudio=null; resolve(false); };
+      audio.play().catch(()=>resolve(false));
     });
-  }catch(e){
-    console.warn('edge-tts backend:', e.message, '— falling back to browser synthesis');
-    return false;
-  }
+  }catch(e){ console.warn('edge-tts backend:',e.message,'— falling back to browser synthesis'); return false; }
 }
-
-async function speakViaBrowser(text, langCode){
-  if(!window.speechSynthesis){ return; }
-
-  /* Wait for voices to load (up to 1.5s) */
-  const voices = await new Promise(resolve => {
-    const v = window.speechSynthesis.getVoices();
+async function speakViaBrowser(text,langCode){
+  if(!window.speechSynthesis) return;
+  const voices=await new Promise(resolve=>{
+    const v=window.speechSynthesis.getVoices();
     if(v.length){ resolve(v); return; }
-    let settled = false;
-    window.speechSynthesis.onvoiceschanged = () => {
-      if(!settled){ settled = true; resolve(window.speechSynthesis.getVoices()); }
-    };
-    setTimeout(() => { if(!settled){ settled = true; resolve(window.speechSynthesis.getVoices() || []); } }, 1500);
+    let done=false;
+    window.speechSynthesis.onvoiceschanged=()=>{ if(!done){done=true;resolve(window.speechSynthesis.getVoices());} };
+    setTimeout(()=>{ if(!done){done=true;resolve(window.speechSynthesis.getVoices()||[]);} },1500);
   });
-
-  const voice = pickVoice(voices, langCode);
-  const utter = new SpeechSynthesisUtterance(text.slice(0, 800));
-  utter.lang   = langCode === 'ar' ? 'ar-SA' : 'en-US';
-  utter.rate   = 1.08;   /* slightly faster = less robotic */
-  utter.pitch  = 0.95;   /* slightly lower = warmer */
-  utter.volume = 1.0;
-  if(voice) utter.voice = voice;
-  curUtter = utter;
-
-  /* Chrome stall prevention */
+  const voice=pickVoice(voices,langCode);
+  const utter=new SpeechSynthesisUtterance(text.slice(0,800));
+  utter.lang=langCode==='ar'?'ar-SA':'en-US';
+  utter.rate=1.08; utter.pitch=0.95; utter.volume=1.0;
+  if(voice) utter.voice=voice;
+  curUtter=utter;
   let keepAlive;
-  return new Promise(resolve => {
-    utter.onstart = () => {
-      keepAlive = setInterval(() => {
-        if(!window.speechSynthesis.speaking){ clearInterval(keepAlive); return; }
-        window.speechSynthesis.pause();
-        window.speechSynthesis.resume();
-      }, 10000);
-    };
-    utter.onend = () => { clearInterval(keepAlive); curUtter = null; resolve(); };
-    utter.onerror = (e) => { clearInterval(keepAlive); curUtter = null;
-      console.warn('Browser TTS error:', e.error); resolve(); };
+  return new Promise(resolve=>{
+    utter.onstart=()=>{ keepAlive=setInterval(()=>{ if(!window.speechSynthesis.speaking){clearInterval(keepAlive);return;} window.speechSynthesis.pause(); window.speechSynthesis.resume(); },10000); };
+    utter.onend=()=>{ clearInterval(keepAlive); curUtter=null; resolve(); };
+    utter.onerror=()=>{ clearInterval(keepAlive); curUtter=null; resolve(); };
     window.speechSynthesis.speak(utter);
   });
 }
-
-function pickVoice(voices, langCode){
+function pickVoice(voices,langCode){
   if(!voices.length) return null;
-  if(langCode === 'ar'){
-    /* Microsoft Arabic Neural — natural female voices */
-    const prefer = ['Microsoft Zariyah Online','Microsoft Zariyah','Microsoft Ziraa Online',
-      'Microsoft Ziraa','Microsoft Hamed Online','Microsoft Hamed'];
-    for(const p of prefer){
-      const v = voices.find(v => v.name.startsWith(p));
-      if(v) return v;
-    }
-    return voices.find(v => v.lang.startsWith('ar')) || null;
-  }else{
-    /* Microsoft English Neural — all female, very natural */
-    const prefer = ['Microsoft Aria Online','Microsoft Aria',
-      'Microsoft Jenny Online','Microsoft Jenny',
-      'Microsoft Emma Online','Microsoft Emma',
-      'Microsoft Ana Online','Microsoft Ana',
-      'Microsoft Michelle Online','Microsoft Michelle'];
-    for(const p of prefer){
-      const v = voices.find(v => v.name.startsWith(p));
-      if(v) return v;
-    }
-    /* Any Microsoft en-US, avoid Zira (robotic) */
-    return voices.find(v => v.lang.startsWith('en-US') && v.name.includes('Microsoft') && !v.name.includes('Zira'))
-        || voices.find(v => v.lang.startsWith('en') && !v.name.includes('Zira'))
-        || voices[0];
+  if(langCode==='ar'){
+    const prefer=['Microsoft Zariyah Online','Microsoft Zariyah','Microsoft Ziraa Online','Microsoft Ziraa','Microsoft Hamed Online'];
+    for(const p of prefer){ const v=voices.find(v=>v.name.startsWith(p)); if(v) return v; }
+    return voices.find(v=>v.lang.startsWith('ar'))||null;
   }
+  const prefer=['Microsoft Aria Online','Microsoft Aria','Microsoft Jenny Online','Microsoft Jenny',
+    'Microsoft Emma Online','Microsoft Emma','Microsoft Ana Online','Microsoft Ana'];
+  for(const p of prefer){ const v=voices.find(v=>v.name.startsWith(p)); if(v) return v; }
+  return voices.find(v=>v.lang.startsWith('en-US')&&v.name.includes('Microsoft')&&!v.name.includes('Zira'))
+    ||voices.find(v=>v.lang.startsWith('en')&&!v.name.includes('Zira'))||voices[0];
 }
 
 /* ════════════════════════════════════════════════════════════════
-   STT — MediaRecorder + silence detection → Groq Whisper large-v3
-   NOTE: Auto-listen REMOVED to prevent noise-triggered loops.
-   Users tap the globe to start listening manually.
+   STT — manual globe tap only, no auto-listen
 ════════════════════════════════════════════════════════════════ */
 async function toggleMic(){
-  if(isRec){ stopRec(); }
-  else { await startRec(); }
+  if(isRec){ stopRec(); } else { await startRec(); }
 }
-
 async function startRec(){
   if(busy) return;
   stopSpeaking();
-
-  if(!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder){
+  if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){
     toast('Voice input not supported in this browser.','err'); return;
   }
-
-  await new Promise(r => setTimeout(r, 150));
-
+  await new Promise(r=>setTimeout(r,150));
   let stream;
   try{
-    stream = await navigator.mediaDevices.getUserMedia({
-      audio:{ echoCancellation:true, noiseSuppression:true, autoGainControl:true,
-              channelCount:1, sampleRate:16000 },
-      video: false,
+    stream=await navigator.mediaDevices.getUserMedia({
+      audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true,channelCount:1,sampleRate:16000},
+      video:false,
     });
   }catch(e){
-    const msg = (e.name === 'NotAllowedError' || e.name === 'PermissionDeniedError')
-      ? 'Please allow microphone access in your browser settings.'
-      : 'Could not open microphone — please try again.';
-    toast(msg,'err'); console.error('Mic:', e); return;
+    const msg=(e.name==='NotAllowedError'||e.name==='PermissionDeniedError')
+      ?'Please allow microphone access in your browser settings.'
+      :'Could not open microphone — please try again.';
+    toast(msg,'err'); console.error('Mic:',e); return;
   }
-
   audioChunks=[]; skipTranscribe=false;
   isRec=true; setState('listening');
   $('rec-ind').classList.add('on');
   $('user-input').style.opacity='.35';
   toast('Listening… speak now');
-
-  /* Silence detection */
-  let speechSeen=false, silenceTimer=null, noSpeechTimer=null;
+  let speechSeen=false,silenceTimer=null,noSpeechTimer=null;
   try{
-    const ctx = new (window.AudioContext||window.webkitAudioContext)();
-    const src  = ctx.createMediaStreamSource(stream);
-    const ana  = ctx.createAnalyser(); ana.fftSize = 512;
+    const ctx=new (window.AudioContext||window.webkitAudioContext)();
+    const src=ctx.createMediaStreamSource(stream);
+    const ana=ctx.createAnalyser(); ana.fftSize=512;
     src.connect(ana);
-    const buf = new Uint8Array(ana.frequencyBinCount);
-
-    /* No speech within 10s → cancel silently */
-    noSpeechTimer = setTimeout(() => {
-      if(!speechSeen && isRec){ skipTranscribe=true; stopRec(); }
-    }, 10000);
-
-    const tick = setInterval(() => {
+    const buf=new Uint8Array(ana.frequencyBinCount);
+    noSpeechTimer=setTimeout(()=>{ if(!speechSeen&&isRec){skipTranscribe=true;stopRec();} },10000);
+    const tick=setInterval(()=>{
       ana.getByteTimeDomainData(buf);
-      const rms = Math.sqrt(buf.reduce((s,v) => s+(v-128)**2, 0) / buf.length);
-      if(rms >= 18){
-        if(!speechSeen){ speechSeen=true; clearTimeout(noSpeechTimer); noSpeechTimer=null; }
-        if(silenceTimer){ clearTimeout(silenceTimer); silenceTimer=null; }
-      }else if(speechSeen && !silenceTimer){
-        silenceTimer = setTimeout(() => { if(isRec) stopRec(); }, 1500);
+      const rms=Math.sqrt(buf.reduce((s,v)=>s+(v-128)**2,0)/buf.length);
+      if(rms>=18){
+        if(!speechSeen){speechSeen=true;clearTimeout(noSpeechTimer);noSpeechTimer=null;}
+        if(silenceTimer){clearTimeout(silenceTimer);silenceTimer=null;}
+      }else if(speechSeen&&!silenceTimer){
+        silenceTimer=setTimeout(()=>{ if(isRec) stopRec(); },1500);
       }
-    }, 80);
-
-    recCleanup = () => {
-      clearInterval(tick);
-      clearTimeout(silenceTimer);
-      clearTimeout(noSpeechTimer);
-      try{ ctx.close(); }catch(_){}
-    };
-  }catch(e){
-    console.warn('Web Audio unavailable:', e);
-    recCleanup = null;
-  }
-
-  const mime = ['audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus','audio/ogg','audio/mp4']
-    .find(m => { try{ return MediaRecorder.isTypeSupported(m); }catch{ return false; } }) || '';
-  try{ mediaRec = new MediaRecorder(stream, mime ? {mimeType:mime} : {}); }
-  catch(e){ mediaRec = new MediaRecorder(stream); }
-
-  mediaRec.ondataavailable = e => { if(e.data?.size>0) audioChunks.push(e.data); };
-  mediaRec.onstop = async () => { stream.getTracks().forEach(t=>t.stop()); await transcribe(); };
+    },80);
+    recCleanup=()=>{ clearInterval(tick);clearTimeout(silenceTimer);clearTimeout(noSpeechTimer);try{ctx.close();}catch(_){} };
+  }catch(e){ console.warn('Web Audio unavailable:',e); recCleanup=null; }
+  const mime=['audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus','audio/ogg','audio/mp4']
+    .find(m=>{ try{return MediaRecorder.isTypeSupported(m);}catch{return false;} })||'';
+  try{ mediaRec=new MediaRecorder(stream,mime?{mimeType:mime}:{}); }
+  catch(e){ mediaRec=new MediaRecorder(stream); }
+  mediaRec.ondataavailable=e=>{ if(e.data?.size>0) audioChunks.push(e.data); };
+  mediaRec.onstop=async()=>{ stream.getTracks().forEach(t=>t.stop()); await transcribe(); };
   mediaRec.start(150);
-  setTimeout(() => { if(isRec) stopRec(); }, 18000);
+  setTimeout(()=>{ if(isRec) stopRec(); },18000);
 }
-
 function stopRec(){
-  if(!isRec || !mediaRec) return;
-  isRec = false;
-  if(recCleanup){ recCleanup(); recCleanup=null; }
-  try{ if(mediaRec.state !== 'inactive') mediaRec.stop(); }catch(e){ console.warn(e); }
+  if(!isRec||!mediaRec) return;
+  isRec=false;
+  if(recCleanup){recCleanup();recCleanup=null;}
+  try{ if(mediaRec.state!=='inactive') mediaRec.stop(); }catch(e){ console.warn(e); }
   $('rec-ind').classList.remove('on');
-  $('user-input').style.opacity = '1';
+  $('user-input').style.opacity='1';
 }
-
 async function transcribe(){
-  if(skipTranscribe){
-    skipTranscribe=false; audioChunks=[]; setState('idle'); return;
-  }
-  if(!audioChunks.length){ setState('idle'); return; }
-
-  const type = audioChunks[0].type || 'audio/webm';
-  const ext  = type.includes('ogg')?'ogg':type.includes('mp4')?'mp4':'webm';
-  const blob = new Blob(audioChunks, {type});
-  audioChunks = [];
-
-  if(blob.size < 800){ setState('idle'); return; }
-
+  if(skipTranscribe){ skipTranscribe=false;audioChunks=[];setState('idle');return; }
+  if(!audioChunks.length){ setState('idle');return; }
+  const type=audioChunks[0].type||'audio/webm';
+  const ext=type.includes('ogg')?'ogg':type.includes('mp4')?'mp4':'webm';
+  const blob=new Blob(audioChunks,{type}); audioChunks=[];
+  if(blob.size<800){ setState('idle');return; }
   setState('thinking');
-  const hint = /[\u0600-\u06FF]/.test($('user-input').value) ? 'ar' : 'en';
-  const fd = new FormData();
-  fd.append('audio', blob, `rec.${ext}`);
-
+  const hint=/[\u0600-\u06FF]/.test($('user-input').value)?'ar':'en';
+  const fd=new FormData(); fd.append('audio',blob,`rec.${ext}`);
   try{
-    const r = await fetch(`/stt?lang=${hint}`, {method:'POST', body:fd, signal:AbortSignal.timeout(25000)});
+    const r=await fetch(`/stt?lang=${hint}`,{method:'POST',body:fd,signal:AbortSignal.timeout(25000)});
     if(!r.ok) throw new Error('STT '+r.status);
-    const d = await r.json();
-    if(d.text?.trim()){
-      $('user-input').value = d.text.trim();
-      setState('idle');
-      await sendText(d.text.trim());
-    }else{
-      setState('idle');
-    }
-  }catch(e){
-    console.error('STT:', e);
-    setState('idle');
-    toast('Could not transcribe — please try again.','err');
-  }
+    const d=await r.json();
+    if(d.text?.trim()){ $('user-input').value=d.text.trim(); setState('idle'); await sendText(d.text.trim()); }
+    else { setState('idle'); }
+  }catch(e){ console.error('STT:',e); setState('idle'); toast('Could not transcribe — please try again.','err'); }
 }
 
 /* ════════════════════════════════════════════════════════════════
-   TEACHERS PAGE
+   TEACHERS
 ════════════════════════════════════════════════════════════════ */
 async function loadTeachers(){
-  const grid = $('teacher-grid');
-  if(!grid || grid.hasAttribute('data-loaded')) return;
-
+  const grid=$('teacher-grid');
+  if(!grid||grid.hasAttribute('data-loaded')) return;
   try{
-    const r = await fetch('/api/teachers');
-    const teachers = await r.json();
-    allTeachers = teachers;
-    renderTeachers(teachers);
+    const r=await fetch('/api/teachers'); const teachers=await r.json();
+    allTeachers=teachers; renderTeachers(teachers);
     grid.setAttribute('data-loaded','1');
-  }catch(e){
-    $('teacher-grid').innerHTML = `<div class="t-empty" style="grid-column:1/-1">
-      <strong>Could not load teacher data</strong>
-      Please check the school_data/teachers.txt file.
-    </div>`;
-  }
+  }catch(e){ $('teacher-grid').innerHTML='<div class="t-empty"><strong>Could not load teacher data</strong>Check school_data/data_Faculty_Details.md</div>'; }
 }
-
 function renderTeachers(list){
-  const grid = $('teacher-grid');
+  const grid=$('teacher-grid');
   if(!list.length){
-    grid.innerHTML = `<div class="t-empty" style="grid-column:1/-1">
-      <strong>No teacher data yet</strong>
-      Add teacher details to <code>school_data/teachers.txt</code> and restart the server.
-      The file includes a template to get you started.
-    </div>`;
+    grid.innerHTML='<div class="t-empty"><strong>No teacher data yet</strong>Add teacher details to <code>school_data/data_Faculty_Details.md</code> and restart the server.</div>';
     return;
   }
-  /* Avatar colour palette based on name initial */
-  const colours = ['#15803d','#1d4ed8','#7c3aed','#b45309','#be185d','#0f766e'];
-  grid.innerHTML = list.map((t, i) => {
-    const name    = t.name || 'Staff';
-    const initial = name.replace(/^(Ms\.|Mr\.|Mrs\.|Dr\.)\s*/i,'').trim()[0]?.toUpperCase() || '?';
-    const colour  = colours[i % colours.length];
+  const colours=['#15803d','#1d4ed8','#7c3aed','#b45309','#be185d','#0f766e'];
+  grid.innerHTML=list.map((t,i)=>{
+    const name=t.name||'Staff';
+    const initial=name.replace(/^(Ms\.|Mr\.|Mrs\.|Dr\.)\s*/i,'').trim()[0]?.toUpperCase()||'?';
+    const colour=colours[i%colours.length];
     return `<div class="teacher-card">
       <div class="teacher-av" style="background:linear-gradient(135deg,${colour},${colour}bb)">${initial}</div>
       <div style="min-width:0">
         <div class="teacher-name">${name}</div>
-        ${t.department ? `<div class="teacher-dept">${t.department}</div>` : ''}
-        ${t.subjects ? `<div class="teacher-subjects">${t.subjects}</div>` : ''}
+        ${t.department?`<div class="teacher-dept">${t.department}</div>`:''}
+        ${t.subjects?`<div class="teacher-meta">${t.subjects}</div>`:''}
         <div class="teacher-meta">
-          ${t.experience ? `<span>${t.experience}</span>` : ''}
-          ${t.experience && t.qualification ? ' · ' : ''}
-          ${t.qualification ? `<span>${t.qualification}</span>` : ''}
+          ${t.experience?`<span>${t.experience}</span>`:''}
+          ${t.experience&&t.qualification?' · ':''}
+          ${t.qualification?`<span>${t.qualification}</span>`:''}
         </div>
-        ${t.grades ? `<div class="teacher-meta">Grades: ${t.grades}</div>` : ''}
-        ${t.extension ? `<div class="teacher-ext">📞 Ext: ${t.extension}</div>` : ''}
+        ${t.grades?`<div class="teacher-meta">Grades: ${t.grades}</div>`:''}
+        ${t.extension?`<div class="teacher-ext">📞 Ext: ${t.extension}</div>`:''}
       </div>
     </div>`;
   }).join('');
 }
-
 function filterTeachers(){
-  const q = $('teacher-search').value.toLowerCase();
+  const q=$('teacher-search').value.toLowerCase();
   if(!q){ renderTeachers(allTeachers); return; }
-  const filtered = allTeachers.filter(t =>
-    Object.values(t).some(v => String(v).toLowerCase().includes(q))
-  );
-  renderTeachers(filtered);
+  renderTeachers(allTeachers.filter(t=>Object.values(t).some(v=>String(v).toLowerCase().includes(q))));
+}
+
+/* ════════════════════════════════════════════════════════════════
+   EVENTS
+════════════════════════════════════════════════════════════════ */
+async function loadEvents(){
+  const list=$('event-list');
+  if(!list||list.hasAttribute('data-loaded')) return;
+  try{
+    const r=await fetch('/api/events'); const events=await r.json();
+    allEvents=events; renderEvents(events,'all');
+    list.setAttribute('data-loaded','1');
+  }catch(e){ $('event-list').innerHTML='<div class="t-empty"><strong>Could not load events</strong>Check school_data/Events.md</div>'; }
+}
+
+function filterEvents(filter, btn){
+  document.querySelectorAll('.ef-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if(!allEvents.length) return;
+  const filtered=filter==='all'?allEvents:allEvents.filter(e=>{
+    const aud=(e.audience||'').toLowerCase();
+    return aud.includes(filter)||aud.includes('all');
+  });
+  renderEvents(filtered,filter);
+}
+
+function renderEvents(list, filter){
+  const container=$('event-list');
+  if(!list.length){
+    container.innerHTML=`<div class="t-empty"><strong>No events found</strong>${filter==='all'?'Events will appear here when added to Events.md':'No events for this group yet'}</div>`;
+    return;
+  }
+  container.innerHTML=list.map(e=>{
+    const dateStr=e.date||'TBA';
+    let dateBadge='';
+    const m=dateStr.match(/(\w+)\s+(\d+)/);
+    if(m){
+      dateBadge=`<div class="event-date-badge">
+        <div class="edb-month">${m[1].slice(0,3)}</div>
+        <div class="edb-day">${m[2]}</div>
+      </div>`;
+    }else{
+      dateBadge=`<div class="event-date-badge"><div class="edb-tba">${dateStr.slice(0,14)}</div></div>`;
+    }
+    const aud=(e.audience||'all').toLowerCase();
+    const audClass=aud.includes('parent')?'parents':aud.includes('student')?'students':aud.includes('staff')?'staff':'all';
+    const status=(e.status||'upcoming').toLowerCase();
+    const statusClass=status.includes('complete')?'completed':status.includes('ongoing')?'ongoing':'upcoming';
+    return `<div class="event-card">
+      ${dateBadge}
+      <div class="event-body">
+        <div class="event-title">${e.title||'Event'}</div>
+        ${e.description?`<div class="event-desc">${e.description}</div>`:''}
+        <div class="event-meta">
+          ${e.audience?`<span class="ev-tag ${audClass}">👥 ${e.audience}</span>`:''}
+          <span class="ev-tag ${statusClass}">${e.status||'Upcoming'}</span>
+          ${e.time?`<span class="ev-time">🕐 ${e.time}</span>`:''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 /* ════════════════════════════════════════════════════════════════
@@ -1253,17 +1166,13 @@ function closeEsc(){ $('esc-ov').classList.remove('show'); setState('idle'); }
 /* ════════════════════════════════════════════════════════════════
    TOAST
 ════════════════════════════════════════════════════════════════ */
-function toast(msg, type=''){
-  const tc = $('toasts');
-  const el = document.createElement('div');
-  el.className = 'toast' + (type?' '+type:'');
-  el.textContent = msg;
+function toast(msg,type=''){
+  const tc=$('toasts');
+  const el=document.createElement('div');
+  el.className='toast'+(type?' '+type:''); el.textContent=msg;
   tc.appendChild(el);
-  setTimeout(() => {
-    el.style.transition = 'opacity .3s,transform .3s';
-    el.style.opacity='0'; el.style.transform='translateY(6px)';
-    setTimeout(() => el.remove(), 330);
-  }, 2800);
+  setTimeout(()=>{ el.style.transition='opacity .3s,transform .3s'; el.style.opacity='0';
+    el.style.transform='translateY(6px)'; setTimeout(()=>el.remove(),330); },2800);
 }
 
 /* ════════════════════════════════════════════════════════════════
@@ -1271,32 +1180,25 @@ function toast(msg, type=''){
 ════════════════════════════════════════════════════════════════ */
 async function pollStatus(){
   try{
-    const r = await fetch('/status'); if(!r.ok) throw 0;
-    const d = await r.json();
-    $('dot').classList.toggle('off', !d.groq_ready);
-    $('status-txt').textContent = d.groq_ready ? 'Online' : 'Offline';
-  }catch{
-    $('dot').classList.add('off');
-    $('status-txt').textContent = 'Offline';
-  }
+    const r=await fetch('/status'); if(!r.ok) throw 0;
+    const d=await r.json();
+    $('dot').classList.toggle('off',!d.groq_ready);
+    $('status-txt').textContent=d.groq_ready?'Online':'Offline';
+  }catch{ $('dot').classList.add('off'); $('status-txt').textContent='Offline'; }
 }
 
 /* ════════════════════════════════════════════════════════════════
    KIOSK GUARDS
 ════════════════════════════════════════════════════════════════ */
-document.addEventListener('keydown', e => {
-  if((e.ctrlKey||e.metaKey) && 'rRwWlLnN'.includes(e.key)) e.preventDefault();
-  if(e.key==='F5') e.preventDefault();
-});
-document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('keydown',e=>{ if((e.ctrlKey||e.metaKey)&&'rRwWlLnN'.includes(e.key)) e.preventDefault(); if(e.key==='F5') e.preventDefault(); });
+document.addEventListener('contextmenu',e=>e.preventDefault());
 
 /* ════════════════════════════════════════════════════════════════
    INIT
 ════════════════════════════════════════════════════════════════ */
 buildChips();
 pollStatus();
-setInterval(pollStatus, 30000);
-/* Warm up browser voice list */
+setInterval(pollStatus,30000);
 window.speechSynthesis?.getVoices();
 </script>
 </body>

@@ -1,6 +1,7 @@
 """
-NAWIS AI — FastAPI Backend v3
-Bilingual AI receptionist for New Al Wurood International School, Jeddah
+NAWIS AI — FastAPI Backend v4
+Bilingual AI receptionist for New Al Wurood International School, Jeddah.
+Model: llama-3.1-8b-instant (500K TPD) with fallback chain — prevents rate-limit outages.
 """
 import os
 import asyncio
@@ -20,7 +21,7 @@ from pydantic import BaseModel
 from groq import Groq
 
 from config import (
-    GROQ_API_KEY, GROQ_MODEL, GROQ_WHISPER_MODEL,
+    GROQ_API_KEY, GROQ_MODEL, GROQ_MODEL_CHAIN, GROQ_WHISPER_MODEL,
     TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID,
     CALLMEBOT_API_KEY, CALLMEBOT_PHONE,
     SCHOOL_DOCS_FOLDER, SERIAL_PORT, SERIAL_BAUD,
@@ -40,29 +41,28 @@ docs_count   = 0
 # ── System prompt ──────────────────────────────────────────────────────────────
 SYSTEM_PROMPT = """\
 You are NAWIS AI — the smart bilingual AI receptionist at the front desk of \
-New Al Wurood International School (NAWIS), Jeddah, Saudi Arabia.
+New Al Wurood International School (مدرسة النورود الدولية الجديدة), Jeddah, Saudi Arabia.
 
 CORE RULES (follow every single one, every time):
-1. ANSWER LENGTH: Maximum 2–3 short sentences. Never exceed this. No lengthy paragraphs.
-2. USE THE DOCUMENTS: Read the SCHOOL DOCUMENTS section below carefully. \
-   If the answer is there, use it directly and precisely. Do not paraphrase unnecessarily.
+1. ANSWER LENGTH: Maximum 2–3 short sentences. Never exceed this.
+2. USE THE DOCUMENTS: Read the SCHOOL DOCUMENTS section carefully. \
+   If the answer is there, use it directly and precisely.
 3. LANGUAGE: Detect the language of the user's message. \
-   If English → reply in English only. If Arabic → reply in Arabic only. Never mix.
-4. NO FILLER: Never start with "Certainly!", "Of course!", "Great question!", \
-   "Sure!", or any similar opener. Start directly with the answer.
-5. CONTACT: Whenever relevant, include: Phone +966 55 273 0945 | Email admin@alwuroodschool.org
-6. ESCALATE: If the question involves private student records, individual finances, \
-   disciplinary matters, complaints, or anything you cannot find in the documents, \
-   write the single word ESCALATE on its own line at the very end of your response. \
-   Do not announce that you are escalating — just add the word.
-7. SCHOOL NAME: Always call it "NAWIS" or "Al Wurood International School".
+   English → reply in English only. Arabic → reply in Arabic only. Never mix languages.
+4. ARABIC SCHOOL NAME: When replying in Arabic, always call the school \
+   "مدرسة النورود الدولية الجديدة" or "النورود". Never use "الورود" or "الوورود".
+5. NO FILLER: Never start with "Certainly!", "Of course!", "Great question!", or any similar opener.
+6. CONTACT: When relevant, include: Phone +966 55 273 0945 | Email admin@alwuroodschool.org
+7. ESCALATE: For private student records, individual finances, disciplinary matters, \
+   complaints, or anything not in the documents — write the single word ESCALATE \
+   on its own line at the very end. Do not announce you are escalating.
 
 SCHOOL DOCUMENTS — your authoritative knowledge base:
 {context}
 
-If the documents answer the question, cite from them. \
-If the documents are silent and the topic is general (e.g. "what is CBSE?"), \
-you may answer briefly from general knowledge, but keep it to 1–2 sentences."""
+If the documents answer the question, use them. \
+If they are silent and the topic is general (e.g. "what is CBSE?"), \
+answer briefly from general knowledge in 1–2 sentences."""
 
 ESP_MAP = {"idle": "I", "listen": "L", "think": "T", "speak": "S", "error": "E"}
 
@@ -72,11 +72,13 @@ def tokenize(text: str) -> list[str]:
     return re.findall(r"[a-zA-Z\u0600-\u06FF0-9]+", text.lower())
 
 
-# ── Document loader ────────────────────────────────────────────────────────────
-def _chunk_text(text: str, source: str, max_words: int = 400) -> list[dict]:
+# ── Document loader ─────────────────────────────────────────────────────────────
+def _chunk_text(text: str, source: str, max_words: int = 250) -> list[dict]:
+    """Split text into overlapping chunks. Reduced from 400→250 words to save tokens."""
     words = text.split()
     chunks = []
-    for i in range(0, max(len(words), 1), max_words):
+    step = max_words - 30  # 30-word overlap for context continuity
+    for i in range(0, max(len(words), 1), step):
         chunk = " ".join(words[i : i + max_words]).strip()
         if len(chunk) > 40:
             chunks.append({"text": chunk, "source": source})
@@ -93,29 +95,46 @@ def load_documents() -> list[dict]:
         if not fp.is_file():
             continue
         try:
-            text  = ""
+            text   = ""
             suffix = fp.suffix.lower()
-            if suffix == ".txt":
+
+            if suffix in (".txt", ".md"):
                 text = fp.read_text(encoding="utf-8", errors="ignore")
+
             elif suffix == ".pdf":
                 try:
                     from pypdf import PdfReader
                     text = "\n".join(p.extract_text() or "" for p in PdfReader(str(fp)).pages)
                 except ImportError:
                     logger.warning("pypdf not installed — skipping %s", fp.name)
+
             elif suffix == ".docx":
                 try:
                     from docx import Document
                     text = "\n".join(p.text for p in Document(str(fp)).paragraphs)
                 except ImportError:
                     logger.warning("python-docx not installed — skipping %s", fp.name)
-            elif suffix == ".csv":
-                with open(fp, newline="", encoding="utf-8", errors="ignore") as f:
-                    text = "\n".join(", ".join(row) for row in csv.reader(f))
+
+            elif suffix in (".csv", ".xlsx"):
+                if suffix == ".csv":
+                    with open(fp, newline="", encoding="utf-8", errors="ignore") as f:
+                        text = "\n".join(", ".join(row) for row in csv.reader(f))
+                else:
+                    try:
+                        import openpyxl
+                        wb = openpyxl.load_workbook(str(fp), read_only=True, data_only=True)
+                        rows = []
+                        for ws in wb.worksheets:
+                            for row in ws.iter_rows(values_only=True):
+                                rows.append(", ".join(str(c) for c in row if c is not None))
+                        text = "\n".join(rows)
+                    except ImportError:
+                        logger.warning("openpyxl not installed — skipping %s", fp.name)
 
             if text.strip():
                 all_chunks.extend(_chunk_text(text, fp.stem))
                 logger.info("Loaded: %s (%d chars)", fp.name, len(text))
+
         except Exception as exc:
             logger.error("Error loading %s: %s", fp.name, exc)
 
@@ -138,8 +157,8 @@ def build_bm25(chunks: list[dict]) -> None:
         bm25_index = None
 
 
-def query_context(question: str, n: int = 8) -> str:
-    """Return the top-n most relevant document chunks for the question."""
+def query_context(question: str, n: int = 5) -> str:
+    """Return top-n relevant chunks. Reduced from 8→5 to save tokens per query."""
     if not doc_chunks:
         return ""
     tokens = tokenize(question)
@@ -170,6 +189,31 @@ def query_context(question: str, n: int = 8) -> str:
     return "\n\n---\n\n".join(txt for _, txt in results)
 
 
+# ── Model fallback ──────────────────────────────────────────────────────────────
+def chat_with_fallback(messages: list[dict], max_tokens: int = 160, temperature: float = 0.35):
+    """Try each model in the fallback chain. Skips to next on 429 rate-limit errors."""
+    last_exc: Exception | None = None
+    for model in GROQ_MODEL_CHAIN:
+        try:
+            resp = groq_client.chat.completions.create(  # type: ignore[union-attr]
+                model=model,
+                messages=messages,
+                max_tokens=max_tokens,
+                temperature=temperature,
+            )
+            if model != GROQ_MODEL:
+                logger.info("Used fallback model: %s", model)
+            return resp
+        except Exception as exc:
+            err_str = str(exc)
+            if "429" in err_str or "rate_limit" in err_str.lower():
+                logger.warning("Model %s rate-limited — trying next: %s", model, err_str[:120])
+                last_exc = exc
+                continue
+            raise  # Non-rate-limit errors propagate immediately
+    raise last_exc or RuntimeError("All models in fallback chain exhausted")
+
+
 # ── ESP32 ──────────────────────────────────────────────────────────────────────
 def init_serial() -> None:
     global serial_conn
@@ -196,37 +240,9 @@ def send_esp32(char: str) -> None:
 
 
 # ── Alerts ─────────────────────────────────────────────────────────────────────
-
-async def send_whatsapp_alert(question: str) -> None:
-    """Send WhatsApp message via CallMeBot (free, no linked device required).
-    Setup: headmaster adds +34 644 97 79 26 on WhatsApp, sends 'I allow callmebot
-    to send me messages', receives API key. Set CALLMEBOT_API_KEY + CALLMEBOT_PHONE."""
-    now  = datetime.now().strftime("%H:%M")
-    text = (
-        f"\U0001F514 NAWIS AI Alert\n\n"
-        f"A visitor needs assistance:\n{question[:220]}\n\n"
-        f"Please come to reception. Time: {now}"
-    )
-
-    if CALLMEBOT_API_KEY and CALLMEBOT_PHONE:
-        try:
-            async with httpx.AsyncClient(timeout=12) as client:
-                r = await client.get(
-                    "https://api.callmebot.com/whatsapp.php",
-                    params={"phone": CALLMEBOT_PHONE, "text": text, "apikey": CALLMEBOT_API_KEY},
-                )
-                logger.info("CallMeBot WhatsApp: %s", r.status_code)
-                return
-        except Exception as exc:
-            logger.error("CallMeBot error: %s — falling back to Telegram", exc)
-
-    # Fallback: Telegram
-    await send_telegram_alert(question)
-
-
 async def send_telegram_alert(question: str) -> None:
     if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
-        logger.warning("No alert channel configured (CallMeBot or Telegram).")
+        logger.warning("Telegram not configured — no alert sent.")
         return
     now  = datetime.now().strftime("%H:%M")
     text = (
@@ -250,7 +266,7 @@ async def send_telegram_alert(question: str) -> None:
 async def lifespan(app: FastAPI):
     global groq_client, doc_chunks
     logger.info("=" * 56)
-    logger.info("  NAWIS AI  v3  —  starting up…")
+    logger.info("  NAWIS AI  v4  —  starting up…")
     logger.info("=" * 56)
 
     doc_chunks = load_documents()
@@ -258,17 +274,15 @@ async def lifespan(app: FastAPI):
 
     if GROQ_API_KEY:
         groq_client = Groq(api_key=GROQ_API_KEY)
-        logger.info("Groq ready  ·  LLM: %s  ·  STT: %s", GROQ_MODEL, GROQ_WHISPER_MODEL)
+        logger.info(
+            "Groq ready  ·  Primary: %s  ·  Fallback chain: %d models  ·  STT: %s",
+            GROQ_MODEL, len(GROQ_MODEL_CHAIN), GROQ_WHISPER_MODEL,
+        )
     else:
         logger.warning("GROQ_API_KEY not set — AI responses and STT disabled.")
 
-    whatsapp_ok = bool(CALLMEBOT_API_KEY and CALLMEBOT_PHONE)
     telegram_ok = bool(TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID)
-    logger.info(
-        "Alerts: WhatsApp/CallMeBot=%s  Telegram=%s",
-        "\u2713" if whatsapp_ok else "\u2717",
-        "\u2713" if telegram_ok else "\u2717",
-    )
+    logger.info("Alerts: Telegram=%s", "\u2713" if telegram_ok else "\u2717")
 
     init_serial()
     send_esp32("I")
@@ -280,7 +294,7 @@ async def lifespan(app: FastAPI):
 
 
 # ── App ────────────────────────────────────────────────────────────────────────
-app = FastAPI(title="NAWIS AI", version="3.0.0", lifespan=lifespan)
+app = FastAPI(title="NAWIS AI", version="4.0.0", lifespan=lifespan)
 
 
 class ChatRequest(BaseModel):
@@ -306,14 +320,13 @@ async def chat(req: ChatRequest):
         }
 
     try:
-        resp = groq_client.chat.completions.create(
-            model=GROQ_MODEL,
+        resp = chat_with_fallback(
             messages=[
                 {"role": "system", "content": prompt},
                 {"role": "user",   "content": req.message},
             ],
-            max_tokens=220,       # short answers enforced at token level too
-            temperature=0.4,
+            max_tokens=160,
+            temperature=0.35,
         )
         raw      = resp.choices[0].message.content or ""
         escalate = "ESCALATE" in raw
@@ -328,12 +341,15 @@ async def chat(req: ChatRequest):
         return {"reply": clean, "escalate": escalate}
 
     except Exception as exc:
-        logger.error("Groq LLM error: %s", exc)
+        logger.error("All models failed: %s", exc)
         send_esp32("I")
-        return {
-            "reply": "I'm having a moment — please try again or speak to our front desk staff.",
-            "escalate": False,
-        }
+        is_rate_limit = "429" in str(exc) or "rate_limit" in str(exc).lower()
+        reply = (
+            "Our AI is momentarily busy — please try again in a minute or speak to our reception staff."
+            if is_rate_limit else
+            "I'm having a moment — please try again or speak to our front desk staff."
+        )
+        return {"reply": reply, "escalate": False}
 
 
 @app.post("/stt")
@@ -351,7 +367,7 @@ async def speech_to_text(audio: UploadFile = File(...), lang: str = Query("en"))
     mime      = audio.content_type or "audio/webm"
 
     whisper_prompt = (
-        "NAWIS, Al Wurood, Jeddah, Saudi Arabia, CBSE, admissions, school fees, "
+        "NAWIS, Al Nurood, Jeddah, Saudi Arabia, CBSE, admissions, school fees, "
         "Grade 10, Grade 12, principal, teacher, exam, result, transport, uniform, PTM."
         if lang_code == "en" else
         "مدرسة النورود، جدة، المملكة العربية السعودية، القبول، الرسوم، الحافلة، الامتحانات، المدير."
@@ -359,19 +375,16 @@ async def speech_to_text(audio: UploadFile = File(...), lang: str = Query("en"))
 
     try:
         result = groq_client.audio.transcriptions.create(
-            model       = GROQ_WHISPER_MODEL,
-            file        = (fname, data, mime),
-            language    = lang_code,
+            model           = GROQ_WHISPER_MODEL,
+            file            = (fname, data, mime),
+            language        = lang_code,
             response_format = "json",
-            prompt      = whisper_prompt,
-            temperature = 0.0,
+            prompt          = whisper_prompt,
+            temperature     = 0.0,
         )
         text = result.text.strip() if hasattr(result, "text") else str(result).strip()
-
-        # Drop single-word noise results that are very short
         if len(text.split()) <= 1 and len(text) < 4:
             return {"text": ""}
-
         logger.info("STT [%s]: %s…", lang, text[:80])
         return {"text": text}
     except Exception as exc:
@@ -381,7 +394,7 @@ async def speech_to_text(audio: UploadFile = File(...), lang: str = Query("en"))
 
 @app.get("/tts")
 async def text_to_speech(text: str = Query(...), lang: str = Query("en")):
-    """TTS via edge-tts (Microsoft Neural). Works perfectly when running locally."""
+    """TTS via edge-tts (Microsoft Neural). Works perfectly when running locally on Windows."""
     try:
         import edge_tts
     except ImportError:
@@ -415,42 +428,60 @@ async def text_to_speech(text: str = Query(...), lang: str = Query("en")):
     )
 
 
-@app.get("/api/teachers")
-async def get_teachers():
-    """Return structured teacher list parsed from school_data/teachers.txt"""
-    teachers_file = Path(SCHOOL_DOCS_FOLDER) / "teachers.txt"
-    if not teachers_file.exists():
-        return []
-    text = teachers_file.read_text(encoding="utf-8", errors="ignore")
-    teachers = []
-    blocks = [b.strip() for b in text.split("---") if b.strip() and not b.strip().startswith("#")]
+def _parse_md_blocks(text: str) -> list[dict]:
+    """Parse key-value blocks separated by --- from a markdown file."""
+    records = []
+    blocks  = [b.strip() for b in text.split("---") if b.strip() and not b.strip().startswith("#")]
     for block in blocks:
-        teacher: dict[str, str] = {}
+        rec: dict[str, str] = {}
         for line in block.splitlines():
-            line = line.strip()
+            line = line.strip().lstrip("- ")
             if not line or line.startswith("#"):
                 continue
             if ":" in line:
                 key, val = line.split(":", 1)
-                teacher[key.strip().lower().replace(" ", "_")] = val.strip()
-        name = teacher.get("name", "")
-        if name and not name.startswith("["):
-            teachers.append(teacher)
-    return teachers
+                rec[key.strip().lower().replace(" ", "_")] = val.strip()
+        if rec:
+            records.append(rec)
+    return records
+
+
+@app.get("/api/teachers")
+async def get_teachers():
+    """Return structured teacher list from school_data/data_Faculty_Details.md"""
+    for fname in ("data_Faculty_Details.md", "teachers.txt"):
+        fp = Path(SCHOOL_DOCS_FOLDER) / fname
+        if fp.exists():
+            text     = fp.read_text(encoding="utf-8", errors="ignore")
+            teachers = [r for r in _parse_md_blocks(text)
+                        if r.get("name") and not r["name"].startswith("[")]
+            return teachers
+    return []
+
+
+@app.get("/api/events")
+async def get_events():
+    """Return structured events from school_data/Events.md"""
+    fp = Path(SCHOOL_DOCS_FOLDER) / "Events.md"
+    if not fp.exists():
+        return []
+    text   = fp.read_text(encoding="utf-8", errors="ignore")
+    events = [r for r in _parse_md_blocks(text) if r.get("title")]
+    return events
 
 
 @app.get("/status")
 async def status():
     return {
-        "status"            : "ready",
-        "docs_loaded"       : docs_count,
-        "rag_ready"         : bm25_index is not None,
-        "groq_ready"        : groq_client is not None,
-        "esp32_connected"   : bool(serial_conn and serial_conn.is_open),
-        "model"             : GROQ_MODEL,
-        "whisper_model"     : GROQ_WHISPER_MODEL,
-        "whatsapp_ready"    : bool(CALLMEBOT_API_KEY and CALLMEBOT_PHONE),
-        "telegram_ready"    : bool(TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID),
+        "status"          : "ready",
+        "docs_loaded"     : docs_count,
+        "rag_ready"       : bm25_index is not None,
+        "groq_ready"      : groq_client is not None,
+        "esp32_connected" : bool(serial_conn and serial_conn.is_open),
+        "model"           : GROQ_MODEL,
+        "model_chain"     : GROQ_MODEL_CHAIN,
+        "whisper_model"   : GROQ_WHISPER_MODEL,
+        "telegram_ready"  : bool(TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID),
     }
 
 

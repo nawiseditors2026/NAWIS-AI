@@ -1,17 +1,26 @@
 import os
 
-GROQ_API_KEY       = os.environ.get("GROQ_API_KEY", "")
-GROQ_MODEL         = "llama-3.3-70b-versatile"
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
+
+# ── Primary model: llama-3.1-8b-instant ────────────────────────────────────────
+# Chosen over llama-3.3-70b-versatile because:
+#   • 500,000 tokens/day free limit (vs 100K for 70B — which was getting exhausted)
+#   • ~5x faster response time — better kiosk UX
+#   • Fully sufficient for short factual Q&A from documents
+# Fallback chain is tried in order if the primary hits a rate limit.
+GROQ_MODEL        = "llama-3.1-8b-instant"
+GROQ_MODEL_CHAIN  = [
+    "llama-3.1-8b-instant",   # primary — 500K TPD
+    "gemma2-9b-it",            # first fallback — 15K RPD
+    "llama3-8b-8192",          # last resort
+]
 GROQ_WHISPER_MODEL = "whisper-large-v3"
 
 TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 TELEGRAM_CHAT_ID   = os.environ.get("TELEGRAM_CHAT_ID", "")
 
-# CallMeBot — free WhatsApp API, no linked device needed.
-# Setup: headmaster adds +34 644 97 79 26 in WhatsApp, sends "I allow callmebot to send me messages",
-# receives API key. Then set CALLMEBOT_API_KEY and CALLMEBOT_PHONE (e.g. 966501234567)
 CALLMEBOT_API_KEY = os.environ.get("CALLMEBOT_API_KEY", "")
-CALLMEBOT_PHONE   = os.environ.get("CALLMEBOT_PHONE", "")   # international format, no +
+CALLMEBOT_PHONE   = os.environ.get("CALLMEBOT_PHONE", "")
 
 SCHOOL_DOCS_FOLDER = "school_data"
 
