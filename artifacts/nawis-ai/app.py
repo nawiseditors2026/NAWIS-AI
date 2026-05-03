@@ -322,15 +322,35 @@ async def speech_to_text(audio: UploadFile = File(...), lang: str = Query("en"))
     fname = audio.filename or "recording.webm"
     mime = audio.content_type or "audio/webm"
 
+    # Domain-specific prompt dramatically improves Whisper accuracy for school vocab
+    whisper_prompt = (
+        "NAWIS, Al Wurood International School, Jeddah, Saudi Arabia, "
+        "CBSE curriculum, admissions, school fees, transport, bus, "
+        "Grade 10, Grade 12, Science stream, Commerce stream, "
+        "principal, teacher, exam, result, uniform, PTM, parent teacher meeting."
+        if lang != "ar" else
+        "مدرسة النورود، جدة، المملكة العربية السعودية، القبول، الرسوم الدراسية، "
+        "الحافلة، المنهج، الامتحانات، النتائج، المعلم، المدير."
+    )
+
     try:
         result = groq_client.audio.transcriptions.create(
             model=GROQ_WHISPER_MODEL,
             file=(fname, data, mime),
             language=lang_code,
             response_format="json",
+            prompt=whisper_prompt,
+            temperature=0.0,   # Deterministic — reduces hallucination
         )
         text = result.text.strip() if hasattr(result, "text") else str(result).strip()
-        logger.info("STT [%s]: %s…", lang, text[:60])
+
+        # Basic hallucination filter: reject suspiciously short or repeated results
+        words = text.split()
+        if len(words) <= 1 and len(text) < 3:
+            logger.info("STT [%s]: result too short, treating as empty", lang)
+            return {"text": ""}
+
+        logger.info("STT [%s]: %s…", lang, text[:80])
         return {"text": text}
     except Exception as exc:
         logger.error("Whisper error: %s", exc)

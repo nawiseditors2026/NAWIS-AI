@@ -776,24 +776,40 @@ async function speakViaBackend(text){
 }
 
 /* ─────────────────────────────────────────
-   STT — MediaRecorder → Groq Whisper
-   Uses MediaRecorder API (works in all modern browsers after mic permission).
-   Audio is sent to /stt which calls Groq whisper-large-v3-turbo.
+   STT — MediaRecorder + Web Audio silence detection → Groq Whisper large-v3
+   • echoCancellation + noiseSuppression prevent mic picking up speaker audio
+   • Web Audio API AnalyserNode detects speech vs silence
+   • Auto-stops 1.5 s after speech ends (no need to tap again)
+   • Minimum blob size check prevents submitting pure silence
 ───────────────────────────────────────── */
+let recCleanup=null; // holds silence-detection teardown fn
+
 async function toggleMic(){isRec?stopRec():await startRec();}
 
 async function startRec(){
   if(busy)return;
   stopSpeaking();
 
-  /* Ensure MediaRecorder is supported */
   if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){
     toast('Voice input is not supported in this browser.','error');return;
   }
 
+  /* Wait briefly so any TTS audio has finished playing through the speaker
+     before we open the mic — prevents echo pickup */
+  await new Promise(r=>setTimeout(r,250));
+
   let stream;
   try{
-    stream=await navigator.mediaDevices.getUserMedia({audio:true,video:false});
+    stream=await navigator.mediaDevices.getUserMedia({
+      audio:{
+        echoCancellation:true,   // removes speaker playback from mic input
+        noiseSuppression:true,   // reduces background hiss / ambient noise
+        autoGainControl:true,    // normalises quiet voices
+        channelCount:1,          // mono — Whisper prefers mono
+        sampleRate:16000,        // 16 kHz — ideal for Whisper
+      },
+      video:false,
+    });
   }catch(e){
     if(e.name==='NotAllowedError'||e.name==='PermissionDeniedError'){
       toast(T[lang].tMicDeny,'error');
@@ -810,27 +826,58 @@ async function startRec(){
   $('mic-btn').classList.add('rec');
   toast(T[lang].tMicStart);
 
-  /* Pick best supported MIME — Groq Whisper accepts webm/ogg/mp4/flac/mp3/wav */
+  /* ── Silence detection via Web Audio API ── */
+  let audioCtx=null,silenceTimer=null,speechSeen=false;
+  try{
+    audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    const src=audioCtx.createMediaStreamSource(stream);
+    const analyser=audioCtx.createAnalyser();
+    analyser.fftSize=512;
+    src.connect(analyser);
+    const buf=new Uint8Array(analyser.frequencyBinCount);
+
+    const SPEECH_RMS=18;     // amplitude threshold to count as speech
+    const SILENCE_MS=1500;   // stop this long after last speech
+
+    const tick=setInterval(()=>{
+      analyser.getByteTimeDomainData(buf);
+      const rms=Math.sqrt(buf.reduce((s,v)=>s+(v-128)**2,0)/buf.length);
+      if(rms>=SPEECH_RMS){
+        speechSeen=true;
+        if(silenceTimer){clearTimeout(silenceTimer);silenceTimer=null;}
+      }else if(speechSeen&&!silenceTimer){
+        silenceTimer=setTimeout(()=>{if(isRec)stopRec();},SILENCE_MS);
+      }
+    },80);
+
+    recCleanup=()=>{
+      clearInterval(tick);
+      if(silenceTimer)clearTimeout(silenceTimer);
+      try{audioCtx?.close();}catch(_){}
+    };
+  }catch(e){
+    console.warn('Web Audio not available, using timeout fallback:',e);
+    recCleanup=null;
+  }
+
+  /* ── MediaRecorder ── */
   const mime=['audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus','audio/ogg','audio/mp4']
     .find(m=>{try{return MediaRecorder.isTypeSupported(m);}catch{return false;}})||'';
-
-  try{
-    mediaRec=new MediaRecorder(stream,mime?{mimeType:mime}:{});
-  }catch(e){
-    mediaRec=new MediaRecorder(stream);
-  }
+  try{mediaRec=new MediaRecorder(stream,mime?{mimeType:mime}:{});}
+  catch(e){mediaRec=new MediaRecorder(stream);}
 
   mediaRec.ondataavailable=e=>{if(e.data&&e.data.size>0)audioChunks.push(e.data);};
   mediaRec.onstop=async()=>{stream.getTracks().forEach(t=>t.stop());await transcribe();};
-  mediaRec.start(200); /* collect in 200ms chunks for reliability */
+  mediaRec.start(150); // 150 ms chunks
 
-  /* Auto-stop after 14 seconds */
-  setTimeout(()=>{if(isRec)stopRec();},14000);
+  /* Hard cap: 18 s maximum recording */
+  setTimeout(()=>{if(isRec)stopRec();},18000);
 }
 
 function stopRec(){
   if(!isRec||!mediaRec)return;
   isRec=false;
+  if(recCleanup){recCleanup();recCleanup=null;}
   try{if(mediaRec.state!=='inactive')mediaRec.stop();}catch(e){console.warn(e);}
   $('rec-ind').classList.remove('on');
   $('user-input').style.opacity='1';
@@ -839,23 +886,28 @@ function stopRec(){
 
 async function transcribe(){
   if(!audioChunks.length){setState('idle');toast(T[lang].tMicErr,'error');return;}
-  setState('thinking');toast(T[lang].tXcribe);
 
   const type=audioChunks[0].type||'audio/webm';
   const ext=type.includes('ogg')?'ogg':type.includes('mp4')?'mp4':'webm';
   const blob=new Blob(audioChunks,{type});
   audioChunks=[];
 
-  if(blob.size<300){setState('idle');toast(T[lang].tMicErr,'error');return;}
+  /* Reject recordings that are clearly too short (pure noise/silence) */
+  if(blob.size<800){
+    setState('idle');
+    toast(T[lang].tMicErr,'error');
+    return;
+  }
 
+  setState('thinking');toast(T[lang].tXcribe);
   const fd=new FormData();
   fd.append('audio',blob,`recording.${ext}`);
 
   try{
-    const r=await fetch(`/stt?lang=${lang}`,{method:'POST',body:fd,signal:AbortSignal.timeout(20000)});
+    const r=await fetch(`/stt?lang=${lang}`,{method:'POST',body:fd,signal:AbortSignal.timeout(25000)});
     if(!r.ok)throw new Error('STT HTTP '+r.status);
     const d=await r.json();
-    if(d.error){console.warn('STT error:',d.error);}
+    if(d.error)console.warn('STT backend error:',d.error);
     if(d.text?.trim()){
       $('user-input').value=d.text.trim();
       setState('idle');
