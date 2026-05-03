@@ -1,6 +1,6 @@
 """
-NAWIS AI — FastAPI Backend v2
-AI-powered school receptionist for New Al Wurood International School
+NAWIS AI — FastAPI Backend v3
+Bilingual AI receptionist for New Al Wurood International School, Jeddah
 """
 import os
 import asyncio
@@ -22,6 +22,7 @@ from groq import Groq
 from config import (
     GROQ_API_KEY, GROQ_MODEL, GROQ_WHISPER_MODEL,
     TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID,
+    CALLMEBOT_API_KEY, CALLMEBOT_PHONE,
     SCHOOL_DOCS_FOLDER, SERIAL_PORT, SERIAL_BAUD,
     TTS_VOICE_EN, TTS_VOICE_AR,
 )
@@ -29,56 +30,55 @@ from config import (
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("nawis-ai")
 
-# ── Global state ──────────────────────────────────────────────────────────────
-bm25_index = None
+# ── Globals ────────────────────────────────────────────────────────────────────
+bm25_index   = None
 doc_chunks: list[dict] = []
 groq_client: Groq | None = None
-serial_conn = None
-docs_count = 0
+serial_conn  = None
+docs_count   = 0
 
+# ── System prompt ──────────────────────────────────────────────────────────────
 SYSTEM_PROMPT = """\
-You are NAWIS AI, the official AI receptionist of New Al Wurood International \
-School (NAWIS) in Jeddah, Saudi Arabia. You speak on behalf of the school warmly \
-and professionally.
+You are NAWIS AI — the smart bilingual AI receptionist at the front desk of \
+New Al Wurood International School (NAWIS), Jeddah, Saudi Arabia.
 
-YOUR JOB: Answer questions from parents and students about the school — admissions, \
-academics, facilities, events, staff, rules, transport, results, and anything a \
-school receptionist would know.
+CORE RULES (follow every single one, every time):
+1. ANSWER LENGTH: Maximum 2–3 short sentences. Never exceed this. No lengthy paragraphs.
+2. USE THE DOCUMENTS: Read the SCHOOL DOCUMENTS section below carefully. \
+   If the answer is there, use it directly and precisely. Do not paraphrase unnecessarily.
+3. LANGUAGE: Detect the language of the user's message. \
+   If English → reply in English only. If Arabic → reply in Arabic only. Never mix.
+4. NO FILLER: Never start with "Certainly!", "Of course!", "Great question!", \
+   "Sure!", or any similar opener. Start directly with the answer.
+5. CONTACT: Whenever relevant, include: Phone +966 55 273 0945 | Email admin@alwuroodschool.org
+6. ESCALATE: If the question involves private student records, individual finances, \
+   disciplinary matters, complaints, or anything you cannot find in the documents, \
+   write the single word ESCALATE on its own line at the very end of your response. \
+   Do not announce that you are escalating — just add the word.
+7. SCHOOL NAME: Always call it "NAWIS" or "Al Wurood International School".
 
-RULES:
-1. Keep answers concise — 2 to 4 sentences. Never ramble.
-2. Be warm, friendly, and professional at all times.
-3. Use the SCHOOL CONTEXT provided below as your primary source. If the context \
-has the answer, use it directly.
-4. NEVER reveal specific student records, private teacher contact details, internal \
-financial details, or anything that could embarrass the school.
-5. If a question is about sensitive private information, or if you genuinely cannot \
-find the answer in the context, end your entire response with the word ESCALATE on \
-its own line. Do not announce you are escalating — just add the word at the end.
-6. If the user's message is in Arabic, respond entirely in Arabic.
-7. Always refer to the school as NAWIS or Al Wurood.
-
-SCHOOL CONTEXT FROM DOCUMENTS:
+SCHOOL DOCUMENTS — your authoritative knowledge base:
 {context}
-"""
+
+If the documents answer the question, cite from them. \
+If the documents are silent and the topic is general (e.g. "what is CBSE?"), \
+you may answer briefly from general knowledge, but keep it to 1–2 sentences."""
 
 ESP_MAP = {"idle": "I", "listen": "L", "think": "T", "speak": "S", "error": "E"}
 
 
-# ── Tokenizer (EN + AR) ───────────────────────────────────────────────────────
-
+# ── Tokeniser (EN + AR) ────────────────────────────────────────────────────────
 def tokenize(text: str) -> list[str]:
     return re.findall(r"[a-zA-Z\u0600-\u06FF0-9]+", text.lower())
 
 
-# ── Document loading ──────────────────────────────────────────────────────────
-
-def _chunk_text(text: str, source: str, max_words: int = 350) -> list[dict]:
+# ── Document loader ────────────────────────────────────────────────────────────
+def _chunk_text(text: str, source: str, max_words: int = 400) -> list[dict]:
     words = text.split()
     chunks = []
     for i in range(0, max(len(words), 1), max_words):
         chunk = " ".join(words[i : i + max_words]).strip()
-        if len(chunk) > 30:
+        if len(chunk) > 40:
             chunks.append({"text": chunk, "source": source})
     return chunks
 
@@ -93,7 +93,7 @@ def load_documents() -> list[dict]:
         if not fp.is_file():
             continue
         try:
-            text = ""
+            text  = ""
             suffix = fp.suffix.lower()
             if suffix == ".txt":
                 text = fp.read_text(encoding="utf-8", errors="ignore")
@@ -120,25 +120,26 @@ def load_documents() -> list[dict]:
             logger.error("Error loading %s: %s", fp.name, exc)
 
     docs_count = len(all_chunks)
-    logger.info("Total chunks: %d", docs_count)
+    logger.info("Total chunks indexed: %d", docs_count)
     return all_chunks
 
 
-def build_bm25(chunks: list[dict]):
+def build_bm25(chunks: list[dict]) -> None:
     global bm25_index
     if not chunks:
         return
     try:
         from rank_bm25 import BM25Okapi
-        tokenized = [tokenize(c["text"]) for c in chunks]
+        tokenized  = [tokenize(c["text"]) for c in chunks]
         bm25_index = BM25Okapi(tokenized)
-        logger.info("BM25 index built (%d chunks)", len(chunks))
+        logger.info("BM25 index ready (%d chunks)", len(chunks))
     except Exception as exc:
         logger.error("BM25 build failed: %s", exc)
         bm25_index = None
 
 
-def query_context(question: str, n: int = 5) -> str:
+def query_context(question: str, n: int = 8) -> str:
+    """Return the top-n most relevant document chunks for the question."""
     if not doc_chunks:
         return ""
     tokens = tokenize(question)
@@ -147,19 +148,18 @@ def query_context(question: str, n: int = 5) -> str:
 
     if bm25_index is not None:
         try:
-            scores = bm25_index.get_scores(tokens)
+            scores  = bm25_index.get_scores(tokens)
             top_idx = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)[:n]
             results = [(scores[i], doc_chunks[i]["text"]) for i in top_idx if scores[i] > 0]
         except Exception:
             results = []
     else:
-        # Fallback: simple keyword scoring
         from collections import Counter
         from math import log
         q_terms = Counter(tokens)
-        results = []
+        results  = []
         for chunk in doc_chunks:
-            ct = Counter(tokenize(chunk["text"]))
+            ct    = Counter(tokenize(chunk["text"]))
             total = sum(ct.values()) or 1
             score = sum((ct[t] / total) * log(1 + qf) for t, qf in q_terms.items() if t in ct)
             if score > 0:
@@ -170,8 +170,7 @@ def query_context(question: str, n: int = 5) -> str:
     return "\n\n---\n\n".join(txt for _, txt in results)
 
 
-# ── ESP32 serial ──────────────────────────────────────────────────────────────
-
+# ── ESP32 ──────────────────────────────────────────────────────────────────────
 def init_serial() -> None:
     global serial_conn
     try:
@@ -196,17 +195,44 @@ def send_esp32(char: str) -> None:
         serial_conn = None
 
 
-# ── Telegram alert ────────────────────────────────────────────────────────────
+# ── Alerts ─────────────────────────────────────────────────────────────────────
+
+async def send_whatsapp_alert(question: str) -> None:
+    """Send WhatsApp message via CallMeBot (free, no linked device required).
+    Setup: headmaster adds +34 644 97 79 26 on WhatsApp, sends 'I allow callmebot
+    to send me messages', receives API key. Set CALLMEBOT_API_KEY + CALLMEBOT_PHONE."""
+    now  = datetime.now().strftime("%H:%M")
+    text = (
+        f"\U0001F514 NAWIS AI Alert\n\n"
+        f"A visitor needs assistance:\n{question[:220]}\n\n"
+        f"Please come to reception. Time: {now}"
+    )
+
+    if CALLMEBOT_API_KEY and CALLMEBOT_PHONE:
+        try:
+            async with httpx.AsyncClient(timeout=12) as client:
+                r = await client.get(
+                    "https://api.callmebot.com/whatsapp.php",
+                    params={"phone": CALLMEBOT_PHONE, "text": text, "apikey": CALLMEBOT_API_KEY},
+                )
+                logger.info("CallMeBot WhatsApp: %s", r.status_code)
+                return
+        except Exception as exc:
+            logger.error("CallMeBot error: %s — falling back to Telegram", exc)
+
+    # Fallback: Telegram
+    await send_telegram_alert(question)
+
 
 async def send_telegram_alert(question: str) -> None:
     if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
-        logger.warning("Telegram not configured — skipping alert.")
+        logger.warning("No alert channel configured (CallMeBot or Telegram).")
         return
-    now = datetime.now().strftime("%H:%M")
+    now  = datetime.now().strftime("%H:%M")
     text = (
-        f"\U0001F514 *NAWIS AI \u2014 Escalation Alert*\n\n"
-        f"A visitor needs assistance with:\n_{question[:250]}_\n\n"
-        f"Please come to the reception desk.\n\u23F0 *Time:* {now}"
+        f"\U0001F514 *NAWIS AI \u2014 Escalation*\n\n"
+        f"A visitor needs assistance with:\n_{question[:220]}_\n\n"
+        f"\u23F0 *Time:* {now}"
     )
     try:
         async with httpx.AsyncClient(timeout=10) as client:
@@ -214,19 +240,17 @@ async def send_telegram_alert(question: str) -> None:
                 f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage",
                 json={"chat_id": TELEGRAM_CHAT_ID, "text": text, "parse_mode": "Markdown"},
             )
-            logger.info("Telegram alert sent: %s", r.status_code)
+            logger.info("Telegram alert: %s", r.status_code)
     except Exception as exc:
         logger.error("Telegram error: %s", exc)
 
 
-# ── Lifespan ──────────────────────────────────────────────────────────────────
-
+# ── Lifespan ───────────────────────────────────────────────────────────────────
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global groq_client, doc_chunks
-
     logger.info("=" * 56)
-    logger.info("  NAWIS AI  v2  —  starting up…")
+    logger.info("  NAWIS AI  v3  —  starting up…")
     logger.info("=" * 56)
 
     doc_chunks = load_documents()
@@ -234,9 +258,17 @@ async def lifespan(app: FastAPI):
 
     if GROQ_API_KEY:
         groq_client = Groq(api_key=GROQ_API_KEY)
-        logger.info("Groq ready  |  LLM: %s  |  STT: %s", GROQ_MODEL, GROQ_WHISPER_MODEL)
+        logger.info("Groq ready  ·  LLM: %s  ·  STT: %s", GROQ_MODEL, GROQ_WHISPER_MODEL)
     else:
         logger.warning("GROQ_API_KEY not set — AI responses and STT disabled.")
+
+    whatsapp_ok = bool(CALLMEBOT_API_KEY and CALLMEBOT_PHONE)
+    telegram_ok = bool(TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID)
+    logger.info(
+        "Alerts: WhatsApp/CallMeBot=%s  Telegram=%s",
+        "\u2713" if whatsapp_ok else "\u2717",
+        "\u2713" if telegram_ok else "\u2717",
+    )
 
     init_serial()
     send_esp32("I")
@@ -247,33 +279,29 @@ async def lifespan(app: FastAPI):
         serial_conn.close()
 
 
-# ── App ───────────────────────────────────────────────────────────────────────
+# ── App ────────────────────────────────────────────────────────────────────────
+app = FastAPI(title="NAWIS AI", version="3.0.0", lifespan=lifespan)
 
-app = FastAPI(title="NAWIS AI", version="2.0.0", lifespan=lifespan)
-
-
-# ── Models ────────────────────────────────────────────────────────────────────
 
 class ChatRequest(BaseModel):
     message: str
     language: str = "en"
 
 
-# ── Endpoints ─────────────────────────────────────────────────────────────────
+# ── Endpoints ──────────────────────────────────────────────────────────────────
 
 @app.post("/chat")
 async def chat(req: ChatRequest):
     send_esp32("T")
-
     context = query_context(req.message)
-    prompt = SYSTEM_PROMPT.format(
-        context=context or "No document context available — answer from general school knowledge."
+    prompt  = SYSTEM_PROMPT.format(
+        context=context or "No relevant documents found — use general school knowledge."
     )
 
     if groq_client is None:
         send_esp32("I")
         return {
-            "reply": "The AI service is not configured yet. Please contact the school office at +966 55 273 0945.",
+            "reply": "The AI service is not configured. Please contact the school office at +966 55 273 0945.",
             "escalate": False,
         }
 
@@ -284,16 +312,16 @@ async def chat(req: ChatRequest):
                 {"role": "system", "content": prompt},
                 {"role": "user",   "content": req.message},
             ],
-            max_tokens=400,
-            temperature=0.6,
+            max_tokens=220,       # short answers enforced at token level too
+            temperature=0.4,
         )
-        raw = resp.choices[0].message.content or ""
+        raw      = resp.choices[0].message.content or ""
         escalate = "ESCALATE" in raw
-        clean = raw.replace("ESCALATE", "").strip()
+        clean    = raw.replace("ESCALATE", "").strip()
 
         if escalate:
             send_esp32("E")
-            asyncio.create_task(send_telegram_alert(req.message))
+            asyncio.create_task(send_whatsapp_alert(req.message))
         else:
             send_esp32("S")
 
@@ -310,44 +338,38 @@ async def chat(req: ChatRequest):
 
 @app.post("/stt")
 async def speech_to_text(audio: UploadFile = File(...), lang: str = Query("en")):
-    """Transcribe audio using Groq Whisper."""
+    """Transcribe audio using Groq Whisper large-v3 with school-specific priming."""
     if groq_client is None:
         return JSONResponse({"text": "", "error": "Groq not configured"}, status_code=503)
 
     data = await audio.read()
     if len(data) < 500:
-        return JSONResponse({"text": "", "error": "Audio too short or empty"})
+        return JSONResponse({"text": "", "error": "Audio too short"})
 
     lang_code = "ar" if lang == "ar" else "en"
-    fname = audio.filename or "recording.webm"
-    mime = audio.content_type or "audio/webm"
+    fname     = audio.filename or "recording.webm"
+    mime      = audio.content_type or "audio/webm"
 
-    # Domain-specific prompt dramatically improves Whisper accuracy for school vocab
     whisper_prompt = (
-        "NAWIS, Al Wurood International School, Jeddah, Saudi Arabia, "
-        "CBSE curriculum, admissions, school fees, transport, bus, "
-        "Grade 10, Grade 12, Science stream, Commerce stream, "
-        "principal, teacher, exam, result, uniform, PTM, parent teacher meeting."
-        if lang != "ar" else
-        "مدرسة النورود، جدة، المملكة العربية السعودية، القبول، الرسوم الدراسية، "
-        "الحافلة، المنهج، الامتحانات، النتائج، المعلم، المدير."
+        "NAWIS, Al Wurood, Jeddah, Saudi Arabia, CBSE, admissions, school fees, "
+        "Grade 10, Grade 12, principal, teacher, exam, result, transport, uniform, PTM."
+        if lang_code == "en" else
+        "مدرسة النورود، جدة، المملكة العربية السعودية، القبول، الرسوم، الحافلة، الامتحانات، المدير."
     )
 
     try:
         result = groq_client.audio.transcriptions.create(
-            model=GROQ_WHISPER_MODEL,
-            file=(fname, data, mime),
-            language=lang_code,
-            response_format="json",
-            prompt=whisper_prompt,
-            temperature=0.0,   # Deterministic — reduces hallucination
+            model       = GROQ_WHISPER_MODEL,
+            file        = (fname, data, mime),
+            language    = lang_code,
+            response_format = "json",
+            prompt      = whisper_prompt,
+            temperature = 0.0,
         )
         text = result.text.strip() if hasattr(result, "text") else str(result).strip()
 
-        # Basic hallucination filter: reject suspiciously short or repeated results
-        words = text.split()
-        if len(words) <= 1 and len(text) < 3:
-            logger.info("STT [%s]: result too short, treating as empty", lang)
+        # Drop single-word noise results that are very short
+        if len(text.split()) <= 1 and len(text) < 4:
             return {"text": ""}
 
         logger.info("STT [%s]: %s…", lang, text[:80])
@@ -359,21 +381,20 @@ async def speech_to_text(audio: UploadFile = File(...), lang: str = Query("en"))
 
 @app.get("/tts")
 async def text_to_speech(text: str = Query(...), lang: str = Query("en")):
-    """Stream natural TTS audio via edge-tts (Microsoft Neural voices).
-    Used when running locally — in Replit the browser handles TTS directly."""
+    """TTS via edge-tts (Microsoft Neural). Works perfectly when running locally."""
     try:
         import edge_tts
     except ImportError:
         raise HTTPException(503, "edge-tts not installed")
 
-    voice = TTS_VOICE_AR if lang == "ar" else TTS_VOICE_EN
+    voice      = TTS_VOICE_AR if lang == "ar" else TTS_VOICE_EN
     clean_text = text[:600].strip()
     if not clean_text:
         raise HTTPException(400, "Empty text")
 
     buf = bytearray()
     try:
-        communicate = edge_tts.Communicate(text=clean_text, voice=voice, rate="+2%")
+        communicate = edge_tts.Communicate(text=clean_text, voice=voice, rate="+5%")
         async for chunk in communicate.stream():
             if chunk["type"] == "audio":
                 buf.extend(chunk["data"])
@@ -382,26 +403,30 @@ async def text_to_speech(text: str = Query(...), lang: str = Query("en")):
         raise HTTPException(502, f"TTS upstream error: {exc}")
 
     if not buf:
-        raise HTTPException(502, "edge-tts returned no audio data")
+        raise HTTPException(502, "edge-tts returned no audio")
 
     return StreamingResponse(
         iter([bytes(buf)]),
         media_type="audio/mpeg",
-        headers={"Cache-Control": "no-cache, no-store, must-revalidate", "Content-Length": str(len(buf))},
+        headers={
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Content-Length": str(len(buf)),
+        },
     )
 
 
 @app.get("/status")
 async def status():
     return {
-        "status": "ready",
-        "docs_loaded": docs_count,
-        "rag_ready": bm25_index is not None,
-        "esp32_connected": (serial_conn is not None and serial_conn.is_open) if serial_conn else False,
-        "groq_ready": groq_client is not None,
-        "model": GROQ_MODEL,
-        "whisper_model": GROQ_WHISPER_MODEL,
-        "telegram_configured": bool(TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID),
+        "status"            : "ready",
+        "docs_loaded"       : docs_count,
+        "rag_ready"         : bm25_index is not None,
+        "groq_ready"        : groq_client is not None,
+        "esp32_connected"   : bool(serial_conn and serial_conn.is_open),
+        "model"             : GROQ_MODEL,
+        "whisper_model"     : GROQ_WHISPER_MODEL,
+        "whatsapp_ready"    : bool(CALLMEBOT_API_KEY and CALLMEBOT_PHONE),
+        "telegram_ready"    : bool(TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID),
     }
 
 
@@ -411,13 +436,10 @@ async def esp32_state(state: str):
     if not char:
         raise HTTPException(400, f"Unknown state '{state}'")
     send_esp32(char)
-    return {"ok": True, "state": state}
+    return {"ok": True}
 
 
-# ── Serve frontend ────────────────────────────────────────────────────────────
-# FastAPI router routes above always take priority over the static mount below.
-
+# ── Static frontend ─────────────────────────────────────────────────────────────
 FRONTEND_DIR = Path(__file__).parent / "frontend"
 FRONTEND_DIR.mkdir(exist_ok=True)
-
 app.mount("/", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend")

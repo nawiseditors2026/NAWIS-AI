@@ -1,635 +1,558 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>NAWIS AI — Al Wurood International School</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <style>
-    /* ── Reset ───────────────────────────────── */
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>NAWIS AI — Al Wurood International School</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#1B6B2F; --green-light:#22c55e; --green-glow:rgba(34,197,94,.55);
+  --slate50:#f8fafc; --slate100:#f1f5f9; --slate200:#e2e8f0;
+  --slate300:#cbd5e1; --slate400:#94a3b8; --slate500:#64748b;
+  --slate600:#475569; --slate700:#334155; --slate800:#1e293b; --slate900:#0f172a;
+  --white:#fff;
+  --bg:linear-gradient(145deg,#eef2f8 0%,#f0f4fa 60%,#e8edf5 100%);
+  --card:rgba(255,255,255,.9);
+  --shadow-sm:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.05);
+  --shadow-md:0 4px 6px -1px rgba(0,0,0,.08);
+  --shadow-lg:0 10px 15px -3px rgba(0,0,0,.08);
+  --shadow-xl:0 20px 25px -5px rgba(0,0,0,.1);
+  --r-pill:9999px; --r-lg:16px; --r-xl:20px;
+  --t:.2s cubic-bezier(.4,0,.2,1);
+  --topbar:62px; --globe-sec:175px; --inputbar:68px;
+  /* Cambria for brand — falls back to Georgia on non-Windows */
+  --font-brand:Cambria,Georgia,'Times New Roman',serif;
+  --font:Inter,'Noto Sans Arabic',system-ui,sans-serif;
+}
+html,body{height:100%;overflow:hidden;font-family:var(--font);background:var(--bg);
+  color:var(--slate900);-webkit-font-smoothing:antialiased}
+#app{display:flex;flex-direction:column;height:100vh;width:100vw;overflow:hidden}
 
-    :root {
-      --g900:#14532d; --g800:#15803d; --g700:#16a34a; --g600:#22c55e; --g400:#4ade80;
-      --g50:#f0fdf4;  --g100:#dcfce7;
-      --school:#1B6B2F; --gold:#C49A22;
-      --slate50:#f8fafc; --slate100:#f1f5f9; --slate200:#e2e8f0;
-      --slate300:#cbd5e1; --slate400:#94a3b8; --slate500:#64748b;
-      --slate600:#475569; --slate700:#334155; --slate800:#1e293b; --slate900:#0f172a;
-      --blue500:#3b82f6; --blue600:#2563eb; --blue800:#1e40af;
-      --amber400:#fbbf24; --amber500:#f59e0b; --amber700:#b45309;
-      --teal400:#34d399; --teal600:#059669; --teal800:#065f46;
-      --red400:#f87171; --red500:#ef4444; --red700:#b91c1c;
-      --white:#ffffff;
-      --bg:linear-gradient(145deg,#f0f4f8 0%,#eef1f7 50%,#e8ecf4 100%);
-      --card:rgba(255,255,255,0.92);
-      --card-border:rgba(0,0,0,0.06);
-      --shadow-xs:0 1px 2px rgba(0,0,0,.05);
-      --shadow-sm:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.05);
-      --shadow-md:0 4px 6px -1px rgba(0,0,0,.08),0 2px 4px -1px rgba(0,0,0,.05);
-      --shadow-lg:0 10px 15px -3px rgba(0,0,0,.08),0 4px 6px -2px rgba(0,0,0,.04);
-      --shadow-xl:0 20px 25px -5px rgba(0,0,0,.1),0 10px 10px -5px rgba(0,0,0,.04);
-      --transition:0.2s cubic-bezier(.4,0,.2,1);
-      --radius-sm:6px; --radius:10px; --radius-lg:16px; --radius-xl:20px; --radius-pill:9999px;
-      --font:'Inter','Noto Sans Arabic',system-ui,sans-serif;
-      --topbar-h:62px; --orb-section-h:148px; --input-h:70px;
-    }
+/* ══ TOPBAR ══════════════════════════════════════════════════════════════ */
+#topbar{
+  height:var(--topbar);min-height:var(--topbar);flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;
+  background:var(--card);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  border-bottom:1px solid rgba(0,0,0,.06);box-shadow:var(--shadow-sm);z-index:50;
+}
+.brand{display:flex;align-items:center;gap:13px}
+.brand-logo{height:36px;width:auto;object-fit:contain;display:block}
+.brand-sep{width:1px;height:26px;background:var(--slate200)}
+.brand-name{font-family:var(--font-brand);font-size:17px;font-weight:700;
+  color:var(--slate900);letter-spacing:.01em;line-height:1.2}
+.brand-sub{font-family:var(--font-brand);font-size:11.5px;color:var(--slate500);
+  font-weight:400;margin-top:2px;letter-spacing:.01em}
+.brand-sub-ar{font-family:'Noto Sans Arabic',sans-serif;font-size:10px;
+  color:var(--slate400);font-weight:400;direction:rtl}
+.status-pill{display:flex;align-items:center;gap:6px;padding:5px 13px;
+  border-radius:var(--r-pill);background:var(--slate100);
+  font-size:12px;font-weight:500;color:var(--slate600)}
+.dot{width:7px;height:7px;border-radius:50%;background:#22c55e;
+  box-shadow:0 0 0 2px rgba(34,197,94,.22);flex-shrink:0;
+  animation:dot-pulse 2.5s ease-in-out infinite}
+.dot.off{background:#ef4444;box-shadow:0 0 0 2px rgba(239,68,68,.2);animation:none}
+@keyframes dot-pulse{0%,100%{opacity:1}50%{opacity:.5}}
 
-    html,body{height:100%;width:100%;overflow:hidden;
-      font-family:var(--font);background:var(--bg);color:var(--slate900);
-      -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
+/* ══ GLOBE SECTION ═══════════════════════════════════════════════════════ */
+#globe-sec{
+  height:var(--globe-sec);min-height:var(--globe-sec);flex-shrink:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:10px;
+}
+.globe-outer{
+  position:relative;width:132px;height:132px;
+  border-radius:50%;cursor:pointer;
+  transition:box-shadow .5s ease,transform .2s ease;
+  /* idle glow */
+  box-shadow:0 0 0 2px rgba(16,185,129,.15),
+             0 0 20px rgba(16,185,129,.55),
+             0 0 50px rgba(16,185,129,.3),
+             0 0 80px rgba(16,185,129,.14);
+  animation:globe-float 4s ease-in-out infinite;
+}
+.globe-outer:hover{transform:scale(1.04)}
+.globe-outer:active{transform:scale(.97)}
 
-    #app{display:flex;flex-direction:column;height:100vh;width:100vw;overflow:hidden;}
+/* state glows */
+[data-state="listening"] .globe-outer{
+  box-shadow:0 0 0 2px rgba(59,130,246,.2),
+             0 0 22px rgba(59,130,246,.75),
+             0 0 55px rgba(59,130,246,.4),
+             0 0 90px rgba(59,130,246,.2);
+  animation:globe-listen 1.4s ease-in-out infinite}
+[data-state="thinking"] .globe-outer{
+  box-shadow:0 0 0 2px rgba(245,158,11,.2),
+             0 0 22px rgba(245,158,11,.7),
+             0 0 55px rgba(245,158,11,.38),
+             0 0 90px rgba(245,158,11,.18);
+  animation:globe-think 2s ease-in-out infinite alternate}
+[data-state="speaking"] .globe-outer{
+  box-shadow:0 0 0 2px rgba(52,211,153,.2),
+             0 0 26px rgba(52,211,153,.85),
+             0 0 60px rgba(52,211,153,.48),
+             0 0 100px rgba(52,211,153,.24);
+  animation:globe-speak .55s ease-in-out infinite alternate}
+[data-state="escalating"] .globe-outer{
+  box-shadow:0 0 0 2px rgba(239,68,68,.2),
+             0 0 22px rgba(239,68,68,.7),
+             0 0 55px rgba(239,68,68,.38),
+             0 0 90px rgba(239,68,68,.18);
+  animation:globe-float 2s ease-in-out infinite}
 
-    /* ══════════════════════════════════════════
-       TOP BAR
-    ══════════════════════════════════════════ */
-    #topbar {
-      height:var(--topbar-h); min-height:var(--topbar-h);
-      display:flex; align-items:center; justify-content:space-between;
-      padding:0 24px;
-      background:var(--card);
-      backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
-      border-bottom:1px solid var(--card-border);
-      box-shadow:var(--shadow-sm);
-      z-index:50; flex-shrink:0;
-    }
-    .brand{display:flex;align-items:center;gap:13px;}
-    .brand-logo{height:36px;width:auto;object-fit:contain;display:block;}
-    .brand-sep{width:1px;height:26px;background:var(--slate200);}
-    .brand-name{font-size:15px;font-weight:700;color:var(--slate900);letter-spacing:-.3px;line-height:1.25;}
-    .brand-sub{font-size:11px;color:var(--slate500);font-weight:400;margin-top:1px;}
+@keyframes globe-float{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-4px) scale(1.02)}}
+@keyframes globe-listen{0%,100%{transform:scale(1)}40%{transform:scale(1.07)}70%{transform:scale(.97)}}
+@keyframes globe-think{from{transform:scale(1)}to{transform:scale(1.06)}}
+@keyframes globe-speak{from{transform:scaleX(1) scaleY(1)}to{transform:scaleX(1.05) scaleY(.96)}}
 
-    .topbar-right{display:flex;align-items:center;gap:8px;}
+.globe-svg{width:100%;height:100%;display:block;border-radius:50%;overflow:visible}
 
-    .status-pill{
-      display:flex;align-items:center;gap:6px;
-      padding:5px 12px;border-radius:var(--radius-pill);
-      background:var(--slate100);
-      font-size:12px;font-weight:500;color:var(--slate600);
-    }
-    .dot{
-      width:7px;height:7px;border-radius:50%;
-      background:#22c55e;box-shadow:0 0 0 2px rgba(34,197,94,.22);
-      animation:dot-pulse 2.5s ease-in-out infinite;
-      flex-shrink:0;
-    }
-    .dot.offline{background:var(--red500);box-shadow:0 0 0 2px rgba(239,68,68,.2);animation:none;}
-    @keyframes dot-pulse{0%,100%{opacity:1}50%{opacity:.5}}
+/* SVG sphere fill per state — switched via CSS */
+.gs{transition:fill .5s ease} /* .gs = globe sphere */
+#app:not([data-state]) .gs,[data-state="idle"] .gs{fill:url(#gIdle)}
+[data-state="listening"] .gs{fill:url(#gListen)}
+[data-state="thinking"]  .gs{fill:url(#gThink)}
+[data-state="speaking"]  .gs{fill:url(#gSpeak)}
+[data-state="escalating"] .gs{fill:url(#gEsc)}
 
-    .pill-btn{
-      display:inline-flex;align-items:center;gap:6px;
-      padding:7px 15px;border-radius:var(--radius-pill);
-      border:1px solid var(--slate200);background:var(--white);
-      font-family:var(--font);font-size:13px;font-weight:500;color:var(--slate700);
-      cursor:pointer;transition:all var(--transition);user-select:none;
-      box-shadow:var(--shadow-xs);
-    }
-    .pill-btn:hover{border-color:var(--school);color:var(--school);background:var(--g50);}
-    .pill-btn.active{background:var(--school);color:#fff;border-color:var(--school);box-shadow:0 2px 8px rgba(27,107,47,.3);}
-    .pill-btn.muted{color:var(--slate400);border-color:var(--slate200);}
-    .pill-btn.muted:hover{background:var(--slate100);border-color:var(--slate300);color:var(--slate500);}
+/* Mic ring pulse for listening */
+.mic-ring{
+  position:absolute;inset:-10px;border-radius:50%;
+  border:2px solid rgba(59,130,246,.5);
+  opacity:0;pointer-events:none;
+}
+.mic-ring-2{inset:-22px;border-color:rgba(59,130,246,.28);animation-delay:.55s!important}
+[data-state="listening"] .mic-ring{animation:ring-out 1.6s ease-out infinite}
+@keyframes ring-out{0%{opacity:.7;transform:scale(.88)}100%{opacity:0;transform:scale(1.25)}}
 
-    /* ══════════════════════════════════════════
-       ORB SECTION
-    ══════════════════════════════════════════ */
-    #orb-section{
-      height:var(--orb-section-h); min-height:var(--orb-section-h);
-      display:flex;flex-direction:column;align-items:center;justify-content:center;
-      flex-shrink:0; gap:10px;
-    }
+/* Globe status label */
+.globe-label{
+  display:flex;align-items:center;gap:8px;
+  font-size:13px;font-weight:500;color:var(--slate500);
+  transition:color .3s;
+}
+.globe-label-ar{
+  font-family:'Noto Sans Arabic',sans-serif;font-size:12px;
+  color:var(--slate400);direction:rtl;
+}
+.lbl-sep{color:var(--slate300);font-size:11px}
+[data-state="listening"]  .globe-label,.globe-label .ls{color:#2563eb}
+[data-state="thinking"]   .globe-label{color:#d97706}
+[data-state="speaking"]   .globe-label{color:#059669}
+[data-state="escalating"] .globe-label{color:#dc2626}
 
-    .orb-wrap{position:relative;width:120px;height:120px;display:flex;align-items:center;justify-content:center;}
+/* ══ CHAT AREA ═══════════════════════════════════════════════════════════ */
+#chat-area{flex:1;overflow-y:auto;padding:18px 28px;min-height:0;scroll-behavior:smooth}
+#chat-area::-webkit-scrollbar{width:3px}
+#chat-area::-webkit-scrollbar-thumb{background:var(--slate300);border-radius:3px}
 
-    /* Ripple rings — listening */
-    .rpl{
-      position:absolute;border-radius:50%;border:1.5px solid rgba(59,130,246,.45);
-      opacity:0;pointer-events:none;
-      animation:none;
-    }
-    .rpl-1{width:114px;height:114px;}
-    .rpl-2{width:128px;height:128px;border-color:rgba(59,130,246,.28);animation-delay:.45s!important;}
-    .rpl-3{width:142px;height:142px;border-color:rgba(59,130,246,.14);animation-delay:.9s!important;}
-    [data-state="listening"] .rpl{animation:ripple-out 1.7s ease-out infinite;}
-    @keyframes ripple-out{0%{opacity:.75;transform:scale(.88)}100%{opacity:0;transform:scale(1.22)}}
+/* Welcome */
+#welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:100%;text-align:center;gap:14px}
+.w-title{
+  font-size:22px;font-weight:700;color:var(--slate900);letter-spacing:-.4px;
+  line-height:1.3;
+}
+.w-title-ar{
+  display:block;font-family:'Noto Sans Arabic',sans-serif;font-size:17px;
+  font-weight:600;color:var(--slate500);margin-top:5px;direction:rtl;
+}
+.w-sub{font-size:13.5px;color:var(--slate500);max-width:460px;line-height:1.65}
+.w-sub-ar{
+  display:block;font-family:'Noto Sans Arabic',sans-serif;font-size:12px;
+  color:var(--slate400);margin-top:3px;direction:rtl;
+}
 
-    /* Spinner ring — thinking */
-    .spinner{
-      position:absolute;width:116px;height:116px;border-radius:50%;
-      border:2.5px solid transparent;
-      border-top-color:var(--amber500);border-right-color:rgba(245,158,11,.4);
-      opacity:0;pointer-events:none;transition:opacity .3s;
-    }
-    [data-state="thinking"] .spinner{opacity:1;animation:spin 1s linear infinite;}
-    @keyframes spin{to{transform:rotate(360deg)}}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:660px;margin-top:4px}
+.chip{
+  display:inline-flex;flex-direction:column;align-items:center;gap:2px;
+  padding:8px 15px;border-radius:var(--r-pill);
+  border:1px solid var(--slate200);background:var(--white);
+  font-family:var(--font);cursor:pointer;
+  transition:all var(--t);box-shadow:0 1px 2px rgba(0,0,0,.05);user-select:none;
+}
+.chip:hover{border-color:var(--green);background:#f0fdf4;
+  box-shadow:0 2px 8px rgba(27,107,47,.14);transform:translateY(-1px)}
+.chip:active{transform:translateY(0)}
+.chip-en{font-size:13px;font-weight:500;color:var(--slate700)}
+.chip-ar{font-family:'Noto Sans Arabic',sans-serif;font-size:11px;
+  color:var(--slate400);direction:rtl}
+.chip-ico{font-size:15px;margin-bottom:1px}
 
-    /* ── THE ORB ── */
-    .orb{
-      width:100px;height:100px;border-radius:50%;
-      position:relative;cursor:pointer;flex-shrink:0;
-      transition:background .5s ease,box-shadow .5s ease;
-    }
-    /* Gloss */
-    .orb::before{
-      content:'';position:absolute;top:11%;left:15%;width:40%;height:30%;
-      background:radial-gradient(ellipse,rgba(255,255,255,.72) 0%,rgba(255,255,255,.18) 60%,transparent 100%);
-      border-radius:50%;transform:rotate(-18deg);pointer-events:none;
-    }
-    .orb::after{
-      content:'';position:absolute;bottom:17%;right:17%;width:17%;height:13%;
-      background:radial-gradient(ellipse,rgba(255,255,255,.3) 0%,transparent 100%);
-      border-radius:50%;pointer-events:none;
-    }
+/* Messages */
+#messages{display:flex;flex-direction:column;gap:14px}
+.msg{display:flex;align-items:flex-start;gap:9px;
+  animation:msg-in .22s cubic-bezier(.4,0,.2,1)}
+@keyframes msg-in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.msg-user{justify-content:flex-end}
+.msg-ai{justify-content:flex-start}
+.av{width:28px;height:28px;border-radius:8px;flex-shrink:0;overflow:hidden;
+  background:var(--white);box-shadow:var(--shadow-sm);display:flex;align-items:center;justify-content:center}
+.av img{width:100%;height:100%;object-fit:contain;padding:2px}
+.bubble{max-width:74%;padding:11px 15px;font-size:14.5px;line-height:1.65;border-radius:var(--r-lg)}
+.bubble-user{
+  background:var(--green);color:#fff;
+  border-radius:var(--r-lg) var(--r-lg) 4px var(--r-lg);
+  box-shadow:0 2px 10px rgba(27,107,47,.28);
+}
+.bubble-ai{
+  background:var(--white);color:var(--slate800);
+  border-radius:4px var(--r-lg) var(--r-lg) var(--r-lg);
+  box-shadow:var(--shadow-sm);border:1px solid var(--slate100);
+}
+.bubble[dir="rtl"]{font-family:'Noto Sans Arabic',sans-serif;text-align:right}
+.typing{
+  background:var(--white);border:1px solid var(--slate100);
+  border-radius:4px var(--r-lg) var(--r-lg) var(--r-lg);
+  padding:13px 16px;display:flex;gap:5px;align-items:center;box-shadow:var(--shadow-sm);
+}
+.tdot{width:7px;height:7px;border-radius:50%;background:var(--slate300);
+  animation:tdot 1.3s ease-in-out infinite}
+.tdot:nth-child(2){animation-delay:.18s}.tdot:nth-child(3){animation-delay:.36s}
+@keyframes tdot{0%,62%,100%{transform:translateY(0);opacity:.5}31%{transform:translateY(-7px);opacity:1}}
 
-    /* Idle — vivid school green */
-    #app:not([data-state]) .orb,
-    #app[data-state="idle"] .orb{
-      background:radial-gradient(circle at 34% 30%,#a7f3d0 0%,#4ade80 18%,#22c55e 36%,#16a34a 58%,#15803d 78%,#14532d 100%);
-      box-shadow:0 0 0 1px rgba(22,163,74,.2),0 0 22px rgba(34,197,94,.7),0 0 50px rgba(34,197,94,.4),0 0 80px rgba(34,197,94,.2),inset 0 -16px 32px rgba(0,0,0,.2);
-      animation:orb-idle 3.5s ease-in-out infinite;
-    }
-    @keyframes orb-idle{
-      0%,100%{transform:scale(1) translateY(0);box-shadow:0 0 0 1px rgba(22,163,74,.2),0 0 22px rgba(34,197,94,.7),0 0 50px rgba(34,197,94,.4),0 0 80px rgba(34,197,94,.2),inset 0 -16px 32px rgba(0,0,0,.2);}
-      50%{transform:scale(1.038) translateY(-3px);box-shadow:0 0 0 1px rgba(22,163,74,.25),0 0 32px rgba(34,197,94,.9),0 0 65px rgba(34,197,94,.55),0 0 100px rgba(34,197,94,.3),inset 0 -16px 32px rgba(0,0,0,.2);}
-    }
+/* ══ INPUT BAR ═══════════════════════════════════════════════════════════ */
+#input-bar{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 20px 14px;height:var(--inputbar);min-height:var(--inputbar);
+  background:var(--card);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  border-top:1px solid rgba(0,0,0,.06);flex-shrink:0;
+}
+.rec-ind{display:none;align-items:center;gap:3px;height:20px;padding:0 4px}
+.rec-ind.on{display:flex}
+.rbar{width:3px;background:#ef4444;border-radius:2px;animation:rbar .9s ease-in-out infinite}
+.rbar:nth-child(2){animation-delay:.15s}.rbar:nth-child(3){animation-delay:.3s}
+.rbar:nth-child(4){animation-delay:.45s}.rbar:nth-child(5){animation-delay:.6s}
+@keyframes rbar{0%,100%{height:4px;opacity:.5}50%{height:18px;opacity:1}}
 
-    /* Listening — blue */
-    #app[data-state="listening"] .orb{
-      background:radial-gradient(circle at 34% 30%,#bfdbfe 0%,#60a5fa 18%,#3b82f6 36%,#2563eb 58%,#1d4ed8 78%,#1e3a8a 100%);
-      box-shadow:0 0 22px rgba(59,130,246,.75),0 0 50px rgba(59,130,246,.45),0 0 80px rgba(59,130,246,.22),inset 0 -16px 32px rgba(0,0,0,.2);
-      animation:orb-listen 1.4s ease-in-out infinite;
-    }
-    @keyframes orb-listen{0%,100%{transform:scale(1)}35%{transform:scale(1.07)}70%{transform:scale(0.96)}}
+#user-input{
+  flex:1;height:46px;padding:0 18px;
+  border:1.5px solid var(--slate200);border-radius:var(--r-pill);
+  font-family:var(--font);font-size:14.5px;color:var(--slate900);
+  background:var(--white);outline:none;transition:all var(--t);
+  box-shadow:0 1px 2px rgba(0,0,0,.05);
+}
+#user-input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(27,107,47,.1)}
+#user-input::placeholder{color:var(--slate400)}
 
-    /* Thinking — amber */
-    #app[data-state="thinking"] .orb{
-      background:radial-gradient(circle at 34% 30%,#fef08a 0%,#fbbf24 18%,#f59e0b 36%,#d97706 58%,#b45309 78%,#78350f 100%);
-      box-shadow:0 0 22px rgba(245,158,11,.75),0 0 50px rgba(245,158,11,.45),0 0 80px rgba(245,158,11,.22),inset 0 -16px 32px rgba(0,0,0,.2);
-      animation:orb-think 2s ease-in-out infinite alternate;
-    }
-    @keyframes orb-think{from{transform:scale(1)}to{transform:scale(1.055)}}
+.act-btn{
+  width:46px;height:46px;border-radius:50%;border:none;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all var(--t);flex-shrink:0;
+}
+#send-btn{background:var(--green);color:#fff;box-shadow:0 2px 8px rgba(27,107,47,.35)}
+#send-btn:hover{background:#1f7a36;transform:scale(1.06)}
+#send-btn:active{transform:scale(.97)}
+#send-btn:disabled{background:var(--slate300);box-shadow:none;cursor:not-allowed;transform:none}
 
-    /* Speaking — emerald wave */
-    #app[data-state="speaking"] .orb{
-      background:radial-gradient(circle at 34% 30%,#a7f3d0 0%,#6ee7b7 18%,#34d399 36%,#10b981 58%,#059669 78%,#064e3b 100%);
-      box-shadow:0 0 28px rgba(52,211,153,.85),0 0 58px rgba(52,211,153,.5),0 0 90px rgba(52,211,153,.28),inset 0 -16px 32px rgba(0,0,0,.2);
-      animation:orb-speak .55s ease-in-out infinite alternate;
-    }
-    @keyframes orb-speak{from{transform:scaleX(1) scaleY(1)}to{transform:scaleX(1.05) scaleY(0.96)}}
+/* ══ ESCALATION OVERLAY ══════════════════════════════════════════════════ */
+#esc-ov{
+  position:fixed;inset:0;background:rgba(255,255,255,.82);
+  backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);
+  display:flex;align-items:center;justify-content:center;
+  z-index:100;opacity:0;pointer-events:none;transition:opacity .3s
+}
+#esc-ov.show{opacity:1;pointer-events:all}
+.esc-card{
+  background:var(--white);border-radius:28px;padding:44px 52px;
+  max-width:490px;width:90%;text-align:center;
+  box-shadow:var(--shadow-xl),0 0 0 1px rgba(0,0,0,.04);
+  animation:esc-in .35s cubic-bezier(.34,1.56,.64,1)
+}
+@keyframes esc-in{from{transform:scale(.88);opacity:0}to{transform:scale(1);opacity:1}}
+.esc-ico{width:66px;height:66px;border-radius:50%;background:linear-gradient(135deg,#fef3c7,#fde68a);
+  margin:0 auto 20px;display:flex;align-items:center;justify-content:center;
+  font-size:29px;box-shadow:0 4px 16px rgba(245,158,11,.25)}
+.esc-title{font-size:20px;font-weight:700;color:var(--slate900);margin-bottom:8px;letter-spacing:-.3px}
+.esc-title-ar{font-family:'Noto Sans Arabic',sans-serif;font-size:16px;color:var(--slate600);
+  direction:rtl;margin-bottom:12px}
+.esc-body{font-size:14px;color:var(--slate500);line-height:1.75;margin-bottom:5px}
+.esc-body-ar{font-family:'Noto Sans Arabic',sans-serif;font-size:13px;color:var(--slate400);
+  direction:rtl;line-height:1.75;margin-bottom:26px}
+.esc-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:12px 28px;background:var(--green);color:#fff;
+  border:none;border-radius:var(--r-pill);font-family:var(--font);
+  font-size:14px;font-weight:600;cursor:pointer;transition:all var(--t);
+  box-shadow:0 4px 14px rgba(27,107,47,.3)
+}
+.esc-btn:hover{background:#1f7a36;transform:translateY(-1px)}
 
-    /* Escalating — red */
-    #app[data-state="escalating"] .orb{
-      background:radial-gradient(circle at 34% 30%,#fecaca 0%,#f87171 18%,#ef4444 36%,#dc2626 58%,#b91c1c 78%,#7f1d1d 100%);
-      box-shadow:0 0 22px rgba(239,68,68,.75),0 0 50px rgba(239,68,68,.42),0 0 80px rgba(239,68,68,.2),inset 0 -16px 32px rgba(0,0,0,.2);
-      animation:orb-idle 2s ease-in-out infinite;
-    }
-
-    .orb-label{
-      font-size:12.5px;font-weight:500;color:var(--slate500);
-      height:17px;letter-spacing:.01em;transition:color .3s;
-    }
-    [data-state="listening"] .orb-label {color:var(--blue600);}
-    [data-state="thinking"] .orb-label  {color:var(--amber700);}
-    [data-state="speaking"] .orb-label  {color:var(--teal600);}
-    [data-state="escalating"] .orb-label{color:var(--red500);}
-
-    /* ══════════════════════════════════════════
-       CHAT AREA
-    ══════════════════════════════════════════ */
-    #chat-area{
-      flex:1;overflow-y:auto;padding:18px 28px;min-height:0;scroll-behavior:smooth;
-    }
-    #chat-area::-webkit-scrollbar{width:3px;}
-    #chat-area::-webkit-scrollbar-thumb{background:var(--slate300);border-radius:3px;}
-    #chat-area::-webkit-scrollbar-track{background:transparent;}
-
-    /* Welcome */
-    #welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100%;text-align:center;gap:12px;}
-    .w-title{font-size:22px;font-weight:700;color:var(--slate900);letter-spacing:-.4px;}
-    .w-sub{font-size:13.5px;color:var(--slate500);max-width:440px;line-height:1.65;}
-    .w-sub-ar{font-size:12px;color:var(--slate400);font-family:'Noto Sans Arabic',sans-serif;direction:rtl;}
-
-    .chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:640px;margin-top:6px;}
-    .chip{
-      display:inline-flex;align-items:center;gap:7px;
-      padding:8px 16px;border-radius:var(--radius-pill);
-      border:1px solid var(--slate200);background:var(--white);
-      font-family:var(--font);font-size:13px;font-weight:500;color:var(--slate700);
-      cursor:pointer;transition:all var(--transition);box-shadow:var(--shadow-xs);
-      user-select:none;white-space:nowrap;
-    }
-    .chip:hover{border-color:var(--school);color:var(--school);background:var(--g50);box-shadow:0 2px 8px rgba(27,107,47,.14);transform:translateY(-1px);}
-    .chip:active{transform:translateY(0);}
-    .chip-ico{font-size:14px;}
-
-    /* Messages */
-    #messages{display:flex;flex-direction:column;gap:14px;}
-
-    .msg{display:flex;align-items:flex-start;gap:9px;animation:msg-in .22s cubic-bezier(.4,0,.2,1);}
-    @keyframes msg-in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-    .msg-user{justify-content:flex-end;}
-    .msg-ai{justify-content:flex-start;}
-
-    .av{
-      width:28px;height:28px;border-radius:8px;flex-shrink:0;overflow:hidden;
-      background:white;box-shadow:var(--shadow-sm);
-      display:flex;align-items:center;justify-content:center;
-    }
-    .av img{width:100%;height:100%;object-fit:contain;padding:2px;}
-
-    .bubble{
-      max-width:72%;padding:11px 15px;font-size:14.5px;line-height:1.65;font-weight:400;
-      border-radius:var(--radius-lg);
-    }
-    .bubble-user{
-      background:var(--school);color:#fff;
-      border-radius:var(--radius-lg) var(--radius-lg) 4px var(--radius-lg);
-      box-shadow:0 2px 10px rgba(27,107,47,.28);
-    }
-    .bubble-ai{
-      background:var(--white);color:var(--slate800);
-      border-radius:4px var(--radius-lg) var(--radius-lg) var(--radius-lg);
-      box-shadow:var(--shadow-sm);border:1px solid var(--slate100);
-    }
-
-    /* Typing dots */
-    .typing{
-      background:var(--white);border:1px solid var(--slate100);
-      border-radius:4px var(--radius-lg) var(--radius-lg) var(--radius-lg);
-      padding:13px 16px;display:flex;gap:5px;align-items:center;
-      box-shadow:var(--shadow-sm);
-    }
-    .tdot{
-      width:7px;height:7px;border-radius:50%;background:var(--slate300);
-      animation:tdot-anim 1.3s ease-in-out infinite;
-    }
-    .tdot:nth-child(2){animation-delay:.18s;}.tdot:nth-child(3){animation-delay:.36s;}
-    @keyframes tdot-anim{0%,62%,100%{transform:translateY(0);opacity:.5}31%{transform:translateY(-7px);opacity:1}}
-
-    /* ══════════════════════════════════════════
-       INPUT BAR
-    ══════════════════════════════════════════ */
-    #input-bar{
-      display:flex;align-items:center;gap:8px;
-      padding:10px 20px 14px;
-      height:var(--input-h);min-height:var(--input-h);
-      background:var(--card);
-      backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
-      border-top:1px solid var(--card-border);
-      flex-shrink:0;
-    }
-
-    #user-input{
-      flex:1;height:46px;padding:0 18px;
-      border:1.5px solid var(--slate200);border-radius:var(--radius-pill);
-      font-family:var(--font);font-size:14.5px;color:var(--slate900);
-      background:var(--white);outline:none;
-      transition:all var(--transition);box-shadow:var(--shadow-xs);
-    }
-    #user-input:focus{border-color:var(--school);box-shadow:0 0 0 3px rgba(27,107,47,.1);}
-    #user-input::placeholder{color:var(--slate400);}
-
-    /* Recording bars animation inside input row */
-    .rec-indicator{
-      display:none;align-items:center;gap:3px;height:20px;padding:0 4px;
-    }
-    .rec-indicator.on{display:flex;}
-    .rbar{
-      width:3px;background:var(--red500);border-radius:2px;
-      animation:rbar-anim .9s ease-in-out infinite;
-    }
-    .rbar:nth-child(2){animation-delay:.15s;}.rbar:nth-child(3){animation-delay:.3s;}
-    .rbar:nth-child(4){animation-delay:.45s;}.rbar:nth-child(5){animation-delay:.6s;}
-    @keyframes rbar-anim{0%,100%{height:4px;opacity:.5}50%{height:18px;opacity:1}}
-
-    .act-btn{
-      width:46px;height:46px;border-radius:50%;border:none;
-      cursor:pointer;display:flex;align-items:center;justify-content:center;
-      transition:all var(--transition);flex-shrink:0;
-    }
-    #send-btn{
-      background:var(--school);color:#fff;
-      box-shadow:0 2px 8px rgba(27,107,47,.35);
-    }
-    #send-btn:hover{background:#1f7a36;transform:scale(1.06);}
-    #send-btn:active{transform:scale(.97);}
-    #send-btn:disabled{background:var(--slate300);box-shadow:none;cursor:not-allowed;transform:none;}
-    #mic-btn{
-      background:var(--white);border:1.5px solid var(--slate200);
-      color:var(--slate600);box-shadow:var(--shadow-xs);
-    }
-    #mic-btn:hover{border-color:var(--school);color:var(--school);background:var(--g50);}
-    #mic-btn.rec{
-      background:var(--red500);border-color:var(--red500);color:#fff;
-      animation:mic-pulse 1.2s ease-in-out infinite;
-    }
-    @keyframes mic-pulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.4)}50%{box-shadow:0 0 0 10px rgba(239,68,68,0)}}
-
-    /* ══════════════════════════════════════════
-       ESCALATION OVERLAY
-    ══════════════════════════════════════════ */
-    #esc-overlay{
-      position:fixed;inset:0;
-      background:rgba(255,255,255,.82);
-      backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);
-      display:flex;align-items:center;justify-content:center;
-      z-index:100;opacity:0;pointer-events:none;transition:opacity .3s ease;
-    }
-    #esc-overlay.show{opacity:1;pointer-events:all;}
-    .esc-card{
-      background:var(--white);border-radius:28px;padding:44px 52px;
-      max-width:490px;width:90%;text-align:center;
-      box-shadow:var(--shadow-xl),0 0 0 1px rgba(0,0,0,.04);
-      animation:esc-in .35s cubic-bezier(.34,1.56,.64,1);
-    }
-    @keyframes esc-in{from{transform:scale(.88);opacity:0}to{transform:scale(1);opacity:1}}
-    .esc-ico{width:66px;height:66px;border-radius:50%;background:linear-gradient(135deg,#fef3c7,#fde68a);margin:0 auto 20px;display:flex;align-items:center;justify-content:center;font-size:29px;box-shadow:0 4px 16px rgba(245,158,11,.25);}
-    .esc-title{font-size:20px;font-weight:700;color:var(--slate900);margin-bottom:10px;letter-spacing:-.3px;}
-    .esc-body{font-size:14px;color:var(--slate500);line-height:1.75;margin-bottom:7px;}
-    .esc-body-ar{font-size:13px;color:var(--slate400);font-family:'Noto Sans Arabic',sans-serif;direction:rtl;line-height:1.75;margin-bottom:24px;}
-    .esc-btn{
-      display:inline-flex;align-items:center;gap:8px;
-      padding:12px 28px;background:var(--school);color:#fff;
-      border:none;border-radius:var(--radius-pill);
-      font-family:var(--font);font-size:14px;font-weight:600;
-      cursor:pointer;transition:all var(--transition);
-      box-shadow:0 4px 14px rgba(27,107,47,.3);
-    }
-    .esc-btn:hover{background:#1f7a36;transform:translateY(-1px);}
-
-    /* ══════════════════════════════════════════
-       TOAST
-    ══════════════════════════════════════════ */
-    #toasts{
-      position:fixed;bottom:80px;left:50%;transform:translateX(-50%);
-      z-index:200;display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none;
-    }
-    .toast{
-      background:var(--slate900);color:#fff;
-      padding:10px 20px;border-radius:var(--radius-pill);
-      font-size:13px;font-weight:500;box-shadow:var(--shadow-lg);
-      animation:toast-in .25s cubic-bezier(.34,1.56,.64,1);
-      white-space:nowrap;pointer-events:all;
-    }
-    .toast.error{background:var(--red500);}
-    .toast.success{background:var(--teal600);}
-    @keyframes toast-in{from{opacity:0;transform:translateY(10px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
-
-    /* ══════════════════════════════════════════
-       RTL
-    ══════════════════════════════════════════ */
-    [dir="rtl"] #app{direction:rtl;}
-    [dir="rtl"] .bubble-user{border-radius:var(--radius-lg) var(--radius-lg) var(--radius-lg) 4px;}
-    [dir="rtl"] .bubble-ai{border-radius:var(--radius-lg) 4px var(--radius-lg) var(--radius-lg);}
-    [dir="rtl"] .msg-user{flex-direction:row-reverse;}
-    [dir="rtl"] #user-input{direction:rtl;}
-    [dir="rtl"] .w-title,[dir="rtl"] .w-sub,[dir="rtl"] .bubble{font-family:'Noto Sans Arabic',sans-serif;}
-
-    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;}}
-  </style>
+/* ══ TOAST ═══════════════════════════════════════════════════════════════ */
+#toasts{
+  position:fixed;bottom:80px;left:50%;transform:translateX(-50%);
+  z-index:200;display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none
+}
+.toast{
+  background:var(--slate900);color:#fff;padding:10px 20px;
+  border-radius:var(--r-pill);font-size:13px;font-weight:500;
+  box-shadow:var(--shadow-lg);animation:t-in .25s cubic-bezier(.34,1.56,.64,1);
+  white-space:nowrap;pointer-events:all
+}
+.toast.err{background:#ef4444}.toast.ok{background:#059669}
+@keyframes t-in{from{opacity:0;transform:translateY(10px) scale(.95)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
 </head>
 <body>
 <div id="app" data-state="idle">
 
-  <!-- TOP BAR -->
-  <div id="topbar">
-    <div class="brand">
-      <img class="brand-logo" src="/logo.png" alt="NAWIS Logo" onerror="this.style.display='none'" />
-      <div class="brand-sep"></div>
-      <div>
-        <div class="brand-name">NAWIS AI</div>
-        <div class="brand-sub">Al Wurood International School · Jeddah</div>
-      </div>
-    </div>
-    <div class="topbar-right">
-      <div class="status-pill">
-        <div class="dot" id="dot"></div>
-        <span id="status-txt">Online</span>
-      </div>
-      <button class="pill-btn" id="lang-btn" onclick="toggleLang()">
-        <span id="lang-lbl">عربي</span>
-      </button>
-      <button class="pill-btn" id="tts-btn" onclick="toggleTTS()">
-        <span id="tts-ico">🔊</span>
-        <span id="tts-lbl">Voice</span>
-      </button>
+<!-- ── TOP BAR ─────────────────────────────────────────────────── -->
+<div id="topbar">
+  <div class="brand">
+    <img class="brand-logo" src="/logo.png" alt="NAWIS" onerror="this.style.display='none'"/>
+    <div class="brand-sep"></div>
+    <div>
+      <div class="brand-name">NAWIS AI</div>
+      <div class="brand-sub">Al Wurood International School · Jeddah</div>
+      <div class="brand-sub-ar">مدرسة النورود الدولية الجديدة · جدة</div>
     </div>
   </div>
-
-  <!-- ORB -->
-  <div id="orb-section">
-    <div class="orb-wrap">
-      <div class="rpl rpl-1"></div>
-      <div class="rpl rpl-2"></div>
-      <div class="rpl rpl-3"></div>
-      <div class="spinner"></div>
-      <div class="orb" id="orb"></div>
-    </div>
-    <div class="orb-label" id="orb-lbl">Ready to help</div>
+  <div class="status-pill">
+    <div class="dot" id="dot"></div>
+    <span id="status-txt">Online</span>
   </div>
-
-  <!-- CHAT -->
-  <div id="chat-area">
-    <div id="welcome">
-      <h2 class="w-title" id="w-title">How can I help you today?</h2>
-      <p class="w-sub" id="w-sub">Ask me anything about NAWIS — admissions, curriculum, facilities, and more.</p>
-      <p class="w-sub-ar" id="w-sub-ar">اسألني أي شيء عن مدرسة النورود</p>
-      <div class="chips" id="chips"></div>
-    </div>
-    <div id="messages" style="display:none;"></div>
-  </div>
-
-  <!-- INPUT BAR -->
-  <div id="input-bar">
-    <div class="rec-indicator" id="rec-ind">
-      <div class="rbar"></div><div class="rbar"></div><div class="rbar"></div>
-      <div class="rbar"></div><div class="rbar"></div>
-    </div>
-    <input id="user-input" type="text" autocomplete="off"
-      placeholder="Type your question or tap the mic…"
-      onkeydown="onEnter(event)" />
-    <button class="act-btn" id="mic-btn" onclick="toggleMic()" title="Voice input">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 1a4 4 0 0 1 4 4v7a4 4 0 0 1-8 0V5a4 4 0 0 1 4-4zm-2 17.93V21h4v-2.07A8 8 0 0 0 20 11h-2a6 6 0 0 1-12 0H4a8 8 0 0 0 6 7.93z"/>
-      </svg>
-    </button>
-    <button class="act-btn" id="send-btn" onclick="sendMessage()">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
-      </svg>
-    </button>
-  </div>
-
-  <!-- ESCALATION OVERLAY -->
-  <div id="esc-overlay">
-    <div class="esc-card">
-      <div class="esc-ico">🔔</div>
-      <h3 class="esc-title" id="esc-title">Connecting you with our staff</h3>
-      <p class="esc-body" id="esc-body">Our team has been notified and will assist you shortly. Thank you for your patience.</p>
-      <p class="esc-body-ar">تم إخطار فريقنا وسيساعدك قريباً. شكراً على صبرك.</p>
-      <button class="esc-btn" onclick="closeEsc()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-        <span id="esc-btn-lbl">Back to NAWIS AI</span>
-      </button>
-    </div>
-  </div>
-
-  <!-- TOASTS -->
-  <div id="toasts"></div>
 </div>
 
+<!-- ── GLOBE ───────────────────────────────────────────────────── -->
+<div id="globe-sec">
+  <div class="globe-outer" id="globe-btn" onclick="toggleMic()" title="Tap to speak">
+    <div class="mic-ring"></div>
+    <div class="mic-ring mic-ring-2"></div>
+
+    <svg class="globe-svg" viewBox="-65 -65 130 130" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <!-- Idle — rich earth green -->
+        <radialGradient id="gIdle" cx="35%" cy="28%" r="65%">
+          <stop offset="0%"   stop-color="#a7f3d0"/>
+          <stop offset="18%"  stop-color="#4ade80"/>
+          <stop offset="38%"  stop-color="#22c55e"/>
+          <stop offset="60%"  stop-color="#16a34a"/>
+          <stop offset="80%"  stop-color="#15803d"/>
+          <stop offset="100%" stop-color="#14532d"/>
+        </radialGradient>
+        <!-- Listening — ocean blue -->
+        <radialGradient id="gListen" cx="35%" cy="28%" r="65%">
+          <stop offset="0%"   stop-color="#bfdbfe"/>
+          <stop offset="18%"  stop-color="#60a5fa"/>
+          <stop offset="38%"  stop-color="#3b82f6"/>
+          <stop offset="60%"  stop-color="#2563eb"/>
+          <stop offset="80%"  stop-color="#1d4ed8"/>
+          <stop offset="100%" stop-color="#1e3a8a"/>
+        </radialGradient>
+        <!-- Thinking — warm amber -->
+        <radialGradient id="gThink" cx="35%" cy="28%" r="65%">
+          <stop offset="0%"   stop-color="#fef3c7"/>
+          <stop offset="18%"  stop-color="#fcd34d"/>
+          <stop offset="38%"  stop-color="#f59e0b"/>
+          <stop offset="60%"  stop-color="#d97706"/>
+          <stop offset="80%"  stop-color="#b45309"/>
+          <stop offset="100%" stop-color="#78350f"/>
+        </radialGradient>
+        <!-- Speaking — vivid emerald -->
+        <radialGradient id="gSpeak" cx="35%" cy="28%" r="65%">
+          <stop offset="0%"   stop-color="#d1fae5"/>
+          <stop offset="18%"  stop-color="#6ee7b7"/>
+          <stop offset="38%"  stop-color="#34d399"/>
+          <stop offset="60%"  stop-color="#10b981"/>
+          <stop offset="80%"  stop-color="#059669"/>
+          <stop offset="100%" stop-color="#064e3b"/>
+        </radialGradient>
+        <!-- Escalating — red -->
+        <radialGradient id="gEsc" cx="35%" cy="28%" r="65%">
+          <stop offset="0%"   stop-color="#fee2e2"/>
+          <stop offset="18%"  stop-color="#fca5a5"/>
+          <stop offset="38%"  stop-color="#ef4444"/>
+          <stop offset="60%"  stop-color="#dc2626"/>
+          <stop offset="80%"  stop-color="#b91c1c"/>
+          <stop offset="100%" stop-color="#7f1d1d"/>
+        </radialGradient>
+        <clipPath id="gc"><circle r="57"/></clipPath>
+      </defs>
+
+      <!-- Base sphere -->
+      <circle r="57" class="gs"/>
+
+      <!-- Static latitude bands -->
+      <g clip-path="url(#gc)" fill="none" stroke="rgba(255,255,255,.2)" stroke-width=".9">
+        <ellipse rx="57" ry="13" cy="-28.5"/><!-- 30°N -->
+        <ellipse rx="57" ry="13" cy="28.5"/><!-- 30°S -->
+        <line x1="-57" y1="0" x2="57" y2="0"/><!-- equator -->
+      </g>
+
+      <!-- Spinning meridians (SMIL — no JS needed) -->
+      <g clip-path="url(#gc)" fill="none" stroke="rgba(255,255,255,.32)" stroke-width="1.1">
+        <ellipse ry="57" cx="0" cy="0">
+          <animate attributeName="rx" values="1;57;1" dur="9s" repeatCount="indefinite" calcMode="linear"/>
+        </ellipse>
+        <ellipse ry="57" cx="0" cy="0">
+          <animate attributeName="rx" values="1;57;1" dur="9s" repeatCount="indefinite" calcMode="linear" begin="-3s"/>
+        </ellipse>
+        <ellipse ry="57" cx="0" cy="0">
+          <animate attributeName="rx" values="1;57;1" dur="9s" repeatCount="indefinite" calcMode="linear" begin="-6s"/>
+        </ellipse>
+      </g>
+
+      <!-- Gloss highlight -->
+      <ellipse cx="-16" cy="-20" rx="21" ry="14"
+        fill="rgba(255,255,255,.21)" transform="rotate(-20,-16,-20)"/>
+      <!-- Secondary lower shine -->
+      <ellipse cx="18" cy="22" rx="9" ry="6"
+        fill="rgba(255,255,255,.1)" transform="rotate(15,18,22)"/>
+    </svg>
+  </div>
+
+  <!-- Status label — bilingual -->
+  <div class="globe-label">
+    <span id="gl-en">Tap to speak</span>
+    <span class="lbl-sep">·</span>
+    <span class="globe-label-ar" id="gl-ar">انقر للتحدث</span>
+  </div>
+</div>
+
+<!-- ── CHAT AREA ───────────────────────────────────────────────── -->
+<div id="chat-area">
+  <div id="welcome">
+    <h2 class="w-title">
+      How can I help you today?
+      <span class="w-title-ar">كيف يمكنني مساعدتك اليوم؟</span>
+    </h2>
+    <p class="w-sub">
+      Ask me anything about NAWIS — admissions, curriculum, facilities, and more.
+      <span class="w-sub-ar">اسألني أي شيء عن مدرسة النورود — القبول، المناهج، المرافق وأكثر</span>
+    </p>
+    <div class="chips" id="chips"></div>
+  </div>
+  <div id="messages" style="display:none"></div>
+</div>
+
+<!-- ── INPUT BAR ──────────────────────────────────────────────── -->
+<div id="input-bar">
+  <div class="rec-ind" id="rec-ind">
+    <div class="rbar"></div><div class="rbar"></div><div class="rbar"></div>
+    <div class="rbar"></div><div class="rbar"></div>
+  </div>
+  <input id="user-input" type="text" autocomplete="off"
+    placeholder="Type in English or Arabic… / اكتب بالعربي أو الإنجليزي"
+    onkeydown="onEnter(event)"/>
+  <button class="act-btn" id="send-btn" onclick="sendMessage()">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+    </svg>
+  </button>
+</div>
+
+<!-- ── ESCALATION ──────────────────────────────────────────────── -->
+<div id="esc-ov">
+  <div class="esc-card">
+    <div class="esc-ico">🔔</div>
+    <h3 class="esc-title">Connecting you with our staff</h3>
+    <div class="esc-title-ar">نوصلك بفريقنا</div>
+    <p class="esc-body">Our team has been notified and will assist you shortly.</p>
+    <p class="esc-body-ar">تم إخطار فريقنا وسيساعدك قريباً.</p>
+    <button class="esc-btn" onclick="closeEsc()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+      Back to NAWIS AI · العودة
+    </button>
+  </div>
+</div>
+
+<!-- ── TOASTS ──────────────────────────────────────────────────── -->
+<div id="toasts"></div>
+</div><!-- #app -->
+
 <script>
-/* ─────────────────────────────────────────
-   TRANSLATIONS
-───────────────────────────────────────── */
-const T = {
-  en:{
-    states:{idle:'Ready to help',listening:'Listening…',thinking:'Thinking…',speaking:'Speaking…',escalating:'Connecting you with staff…'},
-    ph:'Type your question or tap the mic…',
-    wTitle:'How can I help you today?',
-    wSub:'Ask me anything about NAWIS — admissions, curriculum, facilities, and more.',
-    wSubAr:'اسألني أي شيء عن مدرسة النورود',
-    chips:[
-      {i:'📋',t:'Admission process'},{i:'⏰',t:'School timings'},
-      {i:'📚',t:'CBSE curriculum'},{i:'🚌',t:'Transport & buses'},
-      {i:'🏫',t:'School facilities'},{i:'🎭',t:'Available programmes'},
-      {i:'📝',t:'Exams & results'},{i:'📞',t:'Contact us'},
-    ],
-    online:'Online',offline:'Offline',ttsLbl:'Voice',
-    escTitle:'Connecting you with our staff',
-    escBody:'Our team has been notified and will assist you shortly. Thank you for your patience.',
-    escBtn:'Back to NAWIS AI',
-    tMicStart:'Listening… speak now',tMicDeny:'Please allow microphone access in your browser.',
-    tMicErr:'Could not capture audio — please try again.',
-    tConn:'Connection issue — please try again.',tXcribe:'Transcribing…',
-  },
-  ar:{
-    states:{idle:'جاهز للمساعدة',listening:'جارٍ الاستماع…',thinking:'جارٍ التفكير…',speaking:'جارٍ الكلام…',escalating:'نوصلك بموظفينا…'},
-    ph:'اكتب سؤالك أو انقر على الميكروفون…',
-    wTitle:'كيف يمكنني مساعدتك اليوم؟',
-    wSub:'اسألني أي شيء عن مدرسة النورود — القبول، المناهج، المرافق، وأكثر',
-    wSubAr:'',
-    chips:[
-      {i:'📋',t:'إجراءات القبول'},{i:'⏰',t:'مواعيد المدرسة'},
-      {i:'📚',t:'منهج CBSE'},{i:'🚌',t:'النقل والحافلات'},
-      {i:'🏫',t:'مرافق المدرسة'},{i:'🎭',t:'البرامج المتاحة'},
-      {i:'📝',t:'الامتحانات والنتائج'},{i:'📞',t:'تواصل معنا'},
-    ],
-    online:'متصل',offline:'غير متصل',ttsLbl:'صوت',
-    escTitle:'نوصلك بفريقنا',
-    escBody:'تم إخطار فريقنا وسيساعدك قريباً. شكراً على صبرك.',
-    escBtn:'العودة إلى NAWIS AI',
-    tMicStart:'جارٍ الاستماع… تحدث الآن',tMicDeny:'يرجى السماح بالوصول إلى الميكروفون.',
-    tMicErr:'تعذر التقاط الصوت — يرجى المحاولة مجدداً.',
-    tConn:'مشكلة في الاتصال — يرجى المحاولة مجدداً.',tXcribe:'جارٍ المعالجة…',
-  },
+/* ═══════════════════════════════════════════════════════════════
+   BILINGUAL STATE LABELS
+═══════════════════════════════════════════════════════════════ */
+const STATES = {
+  idle      : { en:'Tap to speak',           ar:'انقر للتحدث' },
+  listening : { en:'Listening…',             ar:'جارٍ الاستماع…' },
+  thinking  : { en:'Thinking…',              ar:'جارٍ التفكير…' },
+  speaking  : { en:'Speaking…',              ar:'جارٍ الكلام…' },
+  escalating: { en:'Connecting you with staff…', ar:'نوصلك بالموظفين…' },
 };
 
-/* ─────────────────────────────────────────
-   STATE
-───────────────────────────────────────── */
-let lang='en', ttsOn=true, isRec=false;
-let mediaRec=null, audioChunks=[], curAudio=null, curUtter=null, busy=false;
-const app=document.getElementById('app');
-const orbLbl=document.getElementById('orb-lbl');
+const CHIPS = [
+  { i:'📋', en:'Admission process',  ar:'إجراءات القبول',        q:'What is the admission process?' },
+  { i:'⏰', en:'School timings',     ar:'مواعيد المدرسة',         q:'What are the school timings?' },
+  { i:'📚', en:'CBSE curriculum',    ar:'منهج CBSE',              q:'Tell me about the CBSE curriculum at NAWIS.' },
+  { i:'🚌', en:'Transport & buses',  ar:'النقل والحافلات',         q:'How does the school transport work?' },
+  { i:'🏫', en:'School facilities',  ar:'مرافق المدرسة',           q:'What facilities does NAWIS have?' },
+  { i:'🎭', en:'Programmes',         ar:'الأنشطة والبرامج',         q:'What extra-curricular programmes are available?' },
+  { i:'📝', en:'Exams & results',    ar:'الامتحانات والنتائج',      q:'How are exams and results handled?' },
+  { i:'📞', en:'Contact NAWIS',      ar:'تواصل مع المدرسة',        q:'How can I contact NAWIS?' },
+];
 
-/* Pre-load voices as soon as possible (browser may lazy-load) */
+/* ═══════════════════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════════════════ */
+const app = document.getElementById('app');
+let busy=false, isRec=false;
+let curAudio=null, curUtter=null;
+let mediaRec=null, audioChunks=[], recCleanup=null, skipTranscribe=false;
 let voicesLoaded=false;
-function loadVoices(){
-  const v=window.speechSynthesis?.getVoices()||[];
-  if(v.length>0)voicesLoaded=true;
-  return v;
-}
-if(window.speechSynthesis){
-  loadVoices();
-  window.speechSynthesis.onvoiceschanged=()=>{loadVoices();};
-}
+
+function $(id){ return document.getElementById(id); }
 
 function setState(s){
-  app.setAttribute('data-state',s);
-  orbLbl.textContent=T[lang].states[s]??'';
-  const map={idle:'idle',listening:'listen',thinking:'think',speaking:'speak',escalating:'error'};
-  fetch('/esp32/'+(map[s]||'idle'),{method:'POST'}).catch(()=>{});
+  app.setAttribute('data-state', s);
+  const st = STATES[s] || STATES.idle;
+  $('gl-en').textContent = st.en;
+  $('gl-ar').textContent = st.ar;
+  const map = { idle:'idle', listening:'listen', thinking:'think', speaking:'speak', escalating:'error' };
+  fetch('/esp32/'+(map[s]||'idle'), {method:'POST'}).catch(()=>{});
 }
 
-/* ─────────────────────────────────────────
-   LANGUAGE
-───────────────────────────────────────── */
-function toggleLang(){lang=lang==='en'?'ar':'en';applyLang();}
-
-function applyLang(){
-  const ar=lang==='ar';
-  document.documentElement.lang=lang;
-  document.documentElement.dir=ar?'rtl':'ltr';
-  app.dir=ar?'rtl':'ltr';
-  $('lang-lbl').textContent=ar?'EN':'عربي';
-  $('user-input').placeholder=T[lang].ph;
-  $('w-title').textContent=T[lang].wTitle;
-  $('w-sub').textContent=T[lang].wSub;
-  $('w-sub-ar').textContent=T[lang].wSubAr;
-  $('tts-lbl').textContent=T[lang].ttsLbl;
-  $('esc-title').textContent=T[lang].escTitle;
-  $('esc-body').textContent=T[lang].escBody;
-  $('esc-btn-lbl').textContent=T[lang].escBtn;
-  const off=$('dot').classList.contains('offline');
-  $('status-txt').textContent=off?T[lang].offline:T[lang].online;
-  orbLbl.textContent=T[lang].states[app.getAttribute('data-state')||'idle']??'';
-  buildChips();
-}
-
-function $(id){return document.getElementById(id);}
-
-/* ─────────────────────────────────────────
-   TTS TOGGLE
-───────────────────────────────────────── */
-function toggleTTS(){
-  ttsOn=!ttsOn;
-  $('tts-ico').textContent=ttsOn?'🔊':'🔇';
-  $('tts-btn').classList.toggle('muted',!ttsOn);
-  if(!ttsOn){stopSpeaking();setState('idle');}
-}
-
-function stopSpeaking(){
-  if(curAudio){curAudio.pause();URL.revokeObjectURL(curAudio.src);curAudio=null;}
-  if(curUtter){window.speechSynthesis?.cancel();curUtter=null;}
-}
-
-/* ─────────────────────────────────────────
+/* ═══════════════════════════════════════════════════════════════
    CHIPS
-───────────────────────────────────────── */
+═══════════════════════════════════════════════════════════════ */
 function buildChips(){
-  const g=$('chips');g.innerHTML='';
-  T[lang].chips.forEach(({i,t})=>{
-    const b=document.createElement('button');
-    b.className='chip';
-    b.innerHTML=`<span class="chip-ico">${i}</span><span>${t}</span>`;
-    b.onclick=()=>sendText(t);
+  const g = $('chips'); g.innerHTML = '';
+  CHIPS.forEach(({ i, en, ar, q }) => {
+    const b = document.createElement('button');
+    b.className = 'chip';
+    b.innerHTML = `<span class="chip-ico">${i}</span>
+      <span class="chip-en">${en}</span>
+      <span class="chip-ar">${ar}</span>`;
+    b.onclick = () => sendText(q);
     g.appendChild(b);
   });
 }
 
-/* ─────────────────────────────────────────
+/* ═══════════════════════════════════════════════════════════════
    CHAT UI
-───────────────────────────────────────── */
+═══════════════════════════════════════════════════════════════ */
 function showChat(){
-  $('welcome').style.display='none';
-  $('messages').style.display='flex';
+  $('welcome').style.display = 'none';
+  $('messages').style.display = 'flex';
 }
 
-function addMsg(role,text){
+function addMsg(role, text){
   showChat();
-  const msgs=$('messages');
-  const row=document.createElement('div');
-  row.className=`msg msg-${role}`;
-  if(role==='ai'){
-    const av=document.createElement('div');av.className='av';
-    av.innerHTML='<img src="/logo.png" alt="N">';
+  const msgs = $('messages');
+  const row = document.createElement('div');
+  row.className = `msg msg-${role}`;
+  if(role === 'ai'){
+    const av = document.createElement('div'); av.className = 'av';
+    av.innerHTML = '<img src="/logo.png" alt="N">';
     row.appendChild(av);
   }
-  const b=document.createElement('div');
-  b.className=`bubble bubble-${role}`;b.textContent=text;
+  const b = document.createElement('div');
+  b.className = `bubble bubble-${role}`;
+  b.textContent = text;
+  /* Auto-detect Arabic for RTL bubble */
+  if(/[\u0600-\u06FF]/.test(text)){
+    b.dir = 'rtl';
+    b.style.fontFamily = "'Noto Sans Arabic', sans-serif";
+  }
   row.appendChild(b);
   msgs.appendChild(row);
   scrollDown();
@@ -637,338 +560,407 @@ function addMsg(role,text){
 
 function addTyping(){
   showChat();
-  const msgs=$('messages');
-  const row=document.createElement('div');
-  row.className='msg msg-ai';row.id='typing-row';
-  const av=document.createElement('div');av.className='av';
-  av.innerHTML='<img src="/logo.png" alt="N">';
-  const ind=document.createElement('div');ind.className='typing';
-  ind.innerHTML='<div class="tdot"></div><div class="tdot"></div><div class="tdot"></div>';
-  row.appendChild(av);row.appendChild(ind);msgs.appendChild(row);scrollDown();
+  const msgs = $('messages');
+  const row = document.createElement('div');
+  row.className = 'msg msg-ai'; row.id = 'typing-row';
+  const av = document.createElement('div'); av.className = 'av';
+  av.innerHTML = '<img src="/logo.png" alt="N">';
+  const ind = document.createElement('div'); ind.className = 'typing';
+  ind.innerHTML = '<div class="tdot"></div><div class="tdot"></div><div class="tdot"></div>';
+  row.appendChild(av); row.appendChild(ind);
+  msgs.appendChild(row); scrollDown();
 }
-
-function removeTyping(){$('typing-row')?.remove();}
-
+function removeTyping(){ $('typing-row')?.remove(); }
 function scrollDown(){
-  const ca=$('chat-area');
-  requestAnimationFrame(()=>ca.scrollTop=ca.scrollHeight);
+  const ca = $('chat-area');
+  requestAnimationFrame(() => ca.scrollTop = ca.scrollHeight);
 }
 
-/* ─────────────────────────────────────────
+/* ═══════════════════════════════════════════════════════════════
    SEND
-───────────────────────────────────────── */
+═══════════════════════════════════════════════════════════════ */
 async function sendText(text){
-  const t=text.trim();if(!t||busy)return;
-  busy=true;$('user-input').value='';
+  const t = text.trim();
+  if(!t || busy) return;
+  busy = true;
+  $('user-input').value = '';
   stopSpeaking();
-  addMsg('user',t);setState('thinking');addTyping();
+  addMsg('user', t);
+  setState('thinking');
+  addTyping();
+
+  /* Detect language from the user's message for Whisper context */
+  const langHint = /[\u0600-\u06FF]/.test(t) ? 'ar' : 'en';
+
   try{
-    const r=await fetch('/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:t,language:lang})});
-    if(!r.ok)throw new Error('HTTP '+r.status);
-    const d=await r.json();
-    removeTyping();addMsg('ai',d.reply);
-    if(d.escalate){setState('escalating');showEsc();}
-    else if(ttsOn){await speakText(d.reply);}
-    else{setState('idle');}
+    const r = await fetch('/chat', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ message:t, language:langHint }),
+    });
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const d = await r.json();
+    removeTyping();
+    addMsg('ai', d.reply);
+    if(d.escalate){ setState('escalating'); showEsc(); }
+    else { await speakText(d.reply, langHint); }
   }catch(e){
-    removeTyping();setState('idle');toast(T[lang].tConn,'error');console.error(e);
-  }finally{busy=false;}
+    removeTyping(); setState('idle');
+    toast('Connection issue — please try again.', 'err');
+    console.error(e);
+    scheduleAutoListen();
+  }finally{ busy = false; }
 }
 
-function sendMessage(){const v=$('user-input').value.trim();if(v)sendText(v);}
-function onEnter(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}}
+function sendMessage(){ const v=$('user-input').value.trim(); if(v) sendText(v); }
+function onEnter(e){ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); sendMessage(); } }
 
-/* ─────────────────────────────────────────
-   TTS — browser speechSynthesis (primary)
-   Best neural voices on Windows: Edge/Chrome use Microsoft Natural voices.
-   Falls back to /tts (edge-tts backend) if browser synthesis not available.
-───────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════
+   TTS — browser speechSynthesis (Microsoft Neural on Windows)
+   Falls back to /tts edge-tts endpoint (works great when running locally)
+═══════════════════════════════════════════════════════════════ */
 
-/* Pick the best available voice for a language */
+/* Pre-warm voice list */
+function loadVoices(){
+  const v = window.speechSynthesis?.getVoices() || [];
+  if(v.length) voicesLoaded = true;
+  return v;
+}
+if(window.speechSynthesis){
+  loadVoices();
+  window.speechSynthesis.onvoiceschanged = () => loadVoices();
+}
+
 function pickVoice(langCode){
-  const voices=window.speechSynthesis?.getVoices()||[];
-  const isAr=langCode==='ar';
-  const pref=isAr
-    ?['ar-SA','ar-EG','ar-AE','ar']
-    :['en-US','en-GB','en-AU','en'];
-
-  /* Priority order: Neural > Premium > Standard */
-  const keywords=['Neural','Natural','Premium','Enhanced','Online'];
-
-  for(const kw of keywords){
-    for(const lc of pref){
-      const v=voices.find(v=>v.lang.startsWith(lc)&&v.name.includes(kw)&&!v.name.toLowerCase().includes('zira'));
-      if(v)return v;
+  const voices = window.speechSynthesis?.getVoices() || [];
+  if(!voices.length) return null;
+  const isAr = langCode === 'ar';
+  if(isAr){
+    /* Microsoft Arabic Neural voices — very natural */
+    const pref = [
+      'Microsoft Zariyah Online','Microsoft Zariyah',
+      'Microsoft Ziraa Online','Microsoft Ziraa',
+      'Microsoft Hamed Online','Microsoft Hamed',
+    ];
+    for(const p of pref){
+      const v = voices.find(v => v.name.startsWith(p));
+      if(v) return v;
     }
+    return voices.find(v => v.lang.startsWith('ar')) || null;
+  }else{
+    /* Microsoft English Neural voices — ChatGPT-quality on Windows */
+    const pref = [
+      'Microsoft Aria Online','Microsoft Aria',
+      'Microsoft Jenny Online','Microsoft Jenny',
+      'Microsoft Emma Online','Microsoft Emma',
+      'Microsoft Ana Online','Microsoft Ana',
+      'Microsoft Guy Online','Microsoft Guy',
+      'Microsoft Eric Online','Microsoft Eric',
+    ];
+    for(const p of pref){
+      const v = voices.find(v => v.name.startsWith(p));
+      if(v) return v;
+    }
+    /* Any Microsoft en-US, avoiding Zira (robotic) */
+    return voices.find(v => v.lang.startsWith('en-US') && v.name.includes('Microsoft') && !v.name.includes('Zira'))
+        || voices.find(v => v.lang.startsWith('en') && !v.name.includes('Zira'))
+        || voices[0];
   }
-  /* Any voice matching lang */
-  for(const lc of pref){
-    const v=voices.find(v=>v.lang.startsWith(lc));
-    if(v)return v;
-  }
-  return voices[0]||null;
 }
 
-async function speakText(text){
-  if(!ttsOn){setState('idle');return;}
+function stopSpeaking(){
+  if(curAudio){ try{ curAudio.pause(); }catch(_){} curAudio = null; }
+  if(curUtter){ try{ window.speechSynthesis?.cancel(); }catch(_){} curUtter = null; }
+}
+
+async function speakText(text, langCode='en'){
+  if(!text?.trim()){ setState('idle'); scheduleAutoListen(); return; }
   setState('speaking');
 
-  /* ── Try browser speechSynthesis first ── */
+  const onDone = () => { setState('idle'); scheduleAutoListen(); };
+
+  /* ── Browser speechSynthesis (primary) ── */
   if(window.speechSynthesis){
-    /* Give browser a moment to have voices if not yet loaded */
+    /* Wait up to 1.5 s for voices if not yet loaded */
     if(!voicesLoaded){
-      await new Promise(r=>{
-        const check=()=>{if(window.speechSynthesis.getVoices().length>0){voicesLoaded=true;r();}};
+      await new Promise(r => {
+        const check = () => { if(window.speechSynthesis.getVoices().length){ voicesLoaded=true; r(); } };
         check();
-        window.speechSynthesis.onvoiceschanged=()=>check();
-        setTimeout(r,1500);
+        window.speechSynthesis.onvoiceschanged = check;
+        setTimeout(r, 1500);
       });
     }
-    const voice=pickVoice(lang);
-    const utter=new SpeechSynthesisUtterance(text.slice(0,800));
-    utter.lang=lang==='ar'?'ar-SA':'en-US';
-    utter.rate=1.0;
-    utter.pitch=1.0;
-    utter.volume=1.0;
-    if(voice)utter.voice=voice;
-    curUtter=utter;
-    return new Promise(resolve=>{
-      utter.onend=()=>{curUtter=null;setState('idle');resolve();};
-      utter.onerror=async(e)=>{
-        console.warn('Browser TTS error:',e.error,'. Trying backend TTS…');
-        curUtter=null;
-        await speakViaBackend(text);
-        resolve();
-      };
-      /* Chrome bug: synthesis stalls after ~15s — keep it alive */
-      const keepAlive=setInterval(()=>{
-        if(!window.speechSynthesis.speaking){clearInterval(keepAlive);return;}
+    const utter = new SpeechSynthesisUtterance(text.slice(0, 800));
+    utter.lang   = langCode === 'ar' ? 'ar-SA' : 'en-US';
+    utter.rate   = 1.1;      /* slightly faster — sounds more natural, less robotic */
+    utter.pitch  = 0.95;     /* slightly warmer */
+    utter.volume = 1.0;
+    const voice = pickVoice(langCode);
+    if(voice) utter.voice = voice;
+    curUtter = utter;
+
+    /* Chrome stall bug fix — keep synthesis alive */
+    let keepAlive;
+    const startKeepAlive = () => {
+      keepAlive = setInterval(() => {
+        if(!window.speechSynthesis.speaking){ clearInterval(keepAlive); return; }
         window.speechSynthesis.pause();
         window.speechSynthesis.resume();
-      },10000);
-      utter.onend=()=>{clearInterval(keepAlive);curUtter=null;setState('idle');resolve();};
+      }, 10000);
+    };
+
+    return new Promise(resolve => {
+      utter.onstart = () => startKeepAlive();
+      utter.onend = () => {
+        clearInterval(keepAlive); curUtter = null; onDone(); resolve();
+      };
+      utter.onerror = async (e) => {
+        clearInterval(keepAlive); curUtter = null;
+        console.warn('Browser TTS error:', e.error, '— trying backend…');
+        await speakViaBackend(text, langCode);
+        onDone(); resolve();
+      };
       window.speechSynthesis.speak(utter);
     });
   }else{
-    await speakViaBackend(text);
+    await speakViaBackend(text, langCode);
+    onDone();
   }
 }
 
-/* Backend TTS fallback — great when running locally (edge-tts has network access) */
-async function speakViaBackend(text){
-  setState('speaking');
+async function speakViaBackend(text, langCode){
+  /* Works perfectly when running locally — edge-tts uses Microsoft Neural voices */
   try{
-    const r=await fetch('/tts?'+new URLSearchParams({text:text.slice(0,600),lang}),{signal:AbortSignal.timeout(12000)});
-    if(!r.ok)throw new Error('TTS HTTP '+r.status);
-    const blob=await r.blob();
-    if(!blob.size)throw new Error('Empty audio');
-    const url=URL.createObjectURL(blob);
-    curAudio=new Audio(url);
-    await new Promise((res,rej)=>{
-      curAudio.onended=()=>{URL.revokeObjectURL(url);curAudio=null;setState('idle');res();};
-      curAudio.onerror=()=>{URL.revokeObjectURL(url);curAudio=null;setState('idle');res();};
-      curAudio.play().catch(rej);
+    const r = await fetch('/tts?'+new URLSearchParams({ text:text.slice(0,600), lang:langCode }),
+      { signal: AbortSignal.timeout(14000) });
+    if(!r.ok) throw new Error('TTS '+r.status);
+    const blob = await r.blob();
+    if(!blob.size) throw new Error('empty audio');
+    const url = URL.createObjectURL(blob);
+    curAudio = new Audio(url);
+    await new Promise(res => {
+      curAudio.onended = () => { URL.revokeObjectURL(url); curAudio=null; res(); };
+      curAudio.onerror = () => { URL.revokeObjectURL(url); curAudio=null; res(); };
+      curAudio.play().catch(res);
     });
-  }catch(e){
-    console.warn('Backend TTS failed:',e);
-    setState('idle');
-  }
+  }catch(e){ console.warn('Backend TTS:', e); }
 }
 
-/* ─────────────────────────────────────────
-   STT — MediaRecorder + Web Audio silence detection → Groq Whisper large-v3
-   • echoCancellation + noiseSuppression prevent mic picking up speaker audio
-   • Web Audio API AnalyserNode detects speech vs silence
-   • Auto-stops 1.5 s after speech ends (no need to tap again)
-   • Minimum blob size check prevents submitting pure silence
-───────────────────────────────────────── */
-let recCleanup=null; // holds silence-detection teardown fn
+/* ═══════════════════════════════════════════════════════════════
+   AUTO-LISTEN — fires after TTS ends
+═══════════════════════════════════════════════════════════════ */
+let autoListenTimer = null;
+function scheduleAutoListen(){
+  clearTimeout(autoListenTimer);
+  autoListenTimer = setTimeout(() => {
+    if(!busy && !isRec && app.getAttribute('data-state') !== 'escalating'){
+      startRec(true);
+    }
+  }, 900);
+}
 
-async function toggleMic(){isRec?stopRec():await startRec();}
+/* ═══════════════════════════════════════════════════════════════
+   STT — MediaRecorder + Web Audio silence detection → Groq Whisper
+   echoCancellation + noiseSuppression prevent TTS echo pickup.
+   Auto-stops 1.5 s after user goes silent.
+═══════════════════════════════════════════════════════════════ */
+async function toggleMic(){
+  if(isRec){ stopRec(); }
+  else { clearTimeout(autoListenTimer); await startRec(false); }
+}
 
-async function startRec(){
-  if(busy)return;
+async function startRec(isAuto=false){
+  if(busy) return;
   stopSpeaking();
 
-  if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){
-    toast('Voice input is not supported in this browser.','error');return;
+  if(!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder){
+    toast('Voice input not supported in this browser.','err'); return;
   }
 
-  /* Wait briefly so any TTS audio has finished playing through the speaker
-     before we open the mic — prevents echo pickup */
-  await new Promise(r=>setTimeout(r,250));
+  /* Short pause so any speaker audio fades before mic opens */
+  await new Promise(r => setTimeout(r, 200));
 
   let stream;
   try{
-    stream=await navigator.mediaDevices.getUserMedia({
+    stream = await navigator.mediaDevices.getUserMedia({
       audio:{
-        echoCancellation:true,   // removes speaker playback from mic input
-        noiseSuppression:true,   // reduces background hiss / ambient noise
-        autoGainControl:true,    // normalises quiet voices
-        channelCount:1,          // mono — Whisper prefers mono
-        sampleRate:16000,        // 16 kHz — ideal for Whisper
+        echoCancellation : true,
+        noiseSuppression : true,
+        autoGainControl  : true,
+        channelCount     : 1,
+        sampleRate       : 16000,
       },
-      video:false,
+      video: false,
     });
   }catch(e){
-    if(e.name==='NotAllowedError'||e.name==='PermissionDeniedError'){
-      toast(T[lang].tMicDeny,'error');
-    }else{
-      toast(T[lang].tMicErr,'error');
-      console.error('Mic error:',e);
-    }
+    const msg = (e.name==='NotAllowedError'||e.name==='PermissionDeniedError')
+      ? 'Please allow microphone access in your browser.'
+      : 'Could not open microphone — please try again.';
+    toast(msg, 'err');
+    console.error('Mic:', e);
     return;
   }
 
-  audioChunks=[];isRec=true;setState('listening');
+  audioChunks=[]; skipTranscribe=false;
+  isRec=true; setState('listening');
   $('rec-ind').classList.add('on');
   $('user-input').style.opacity='.35';
-  $('mic-btn').classList.add('rec');
-  toast(T[lang].tMicStart);
+  if(!isAuto) toast('Listening… speak now');
 
-  /* ── Silence detection via Web Audio API ── */
-  let audioCtx=null,silenceTimer=null,speechSeen=false;
+  /* ── Web Audio silence detection ── */
+  let speechSeen=false, silenceTimer=null, noSpeechTimer=null;
   try{
-    audioCtx=new (window.AudioContext||window.webkitAudioContext)();
-    const src=audioCtx.createMediaStreamSource(stream);
-    const analyser=audioCtx.createAnalyser();
-    analyser.fftSize=512;
-    src.connect(analyser);
-    const buf=new Uint8Array(analyser.frequencyBinCount);
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    const src  = ctx.createMediaStreamSource(stream);
+    const ana  = ctx.createAnalyser(); ana.fftSize = 512;
+    src.connect(ana);
+    const buf = new Uint8Array(ana.frequencyBinCount);
 
-    const SPEECH_RMS=18;     // amplitude threshold to count as speech
-    const SILENCE_MS=1500;   // stop this long after last speech
+    const SPEECH_RMS = 16;
+    const SILENCE_MS = 1500;
+    const NO_SPEECH_MS = isAuto ? 5000 : 16000;
 
-    const tick=setInterval(()=>{
-      analyser.getByteTimeDomainData(buf);
-      const rms=Math.sqrt(buf.reduce((s,v)=>s+(v-128)**2,0)/buf.length);
-      if(rms>=SPEECH_RMS){
-        speechSeen=true;
-        if(silenceTimer){clearTimeout(silenceTimer);silenceTimer=null;}
-      }else if(speechSeen&&!silenceTimer){
-        silenceTimer=setTimeout(()=>{if(isRec)stopRec();},SILENCE_MS);
+    /* No-speech timeout: if no voice detected within N seconds, quietly cancel */
+    noSpeechTimer = setTimeout(() => {
+      if(!speechSeen && isRec){ skipTranscribe=true; stopRec(); }
+    }, NO_SPEECH_MS);
+
+    const tick = setInterval(() => {
+      ana.getByteTimeDomainData(buf);
+      const rms = Math.sqrt(buf.reduce((s,v) => s+(v-128)**2, 0) / buf.length);
+      if(rms >= SPEECH_RMS){
+        if(!speechSeen){ speechSeen=true; clearTimeout(noSpeechTimer); noSpeechTimer=null; }
+        if(silenceTimer){ clearTimeout(silenceTimer); silenceTimer=null; }
+      }else if(speechSeen && !silenceTimer){
+        silenceTimer = setTimeout(() => { if(isRec) stopRec(); }, SILENCE_MS);
       }
-    },80);
+    }, 80);
 
-    recCleanup=()=>{
+    recCleanup = () => {
       clearInterval(tick);
-      if(silenceTimer)clearTimeout(silenceTimer);
-      try{audioCtx?.close();}catch(_){}
+      clearTimeout(silenceTimer);
+      clearTimeout(noSpeechTimer);
+      try{ ctx.close(); }catch(_){}
     };
   }catch(e){
-    console.warn('Web Audio not available, using timeout fallback:',e);
-    recCleanup=null;
+    console.warn('Web Audio unavailable:', e);
+    recCleanup = null;
   }
 
   /* ── MediaRecorder ── */
-  const mime=['audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus','audio/ogg','audio/mp4']
-    .find(m=>{try{return MediaRecorder.isTypeSupported(m);}catch{return false;}})||'';
-  try{mediaRec=new MediaRecorder(stream,mime?{mimeType:mime}:{});}
-  catch(e){mediaRec=new MediaRecorder(stream);}
+  const mime = ['audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus','audio/ogg','audio/mp4']
+    .find(m => { try{ return MediaRecorder.isTypeSupported(m); }catch{ return false; } }) || '';
+  try{ mediaRec = new MediaRecorder(stream, mime ? {mimeType:mime} : {}); }
+  catch(e){ mediaRec = new MediaRecorder(stream); }
 
-  mediaRec.ondataavailable=e=>{if(e.data&&e.data.size>0)audioChunks.push(e.data);};
-  mediaRec.onstop=async()=>{stream.getTracks().forEach(t=>t.stop());await transcribe();};
-  mediaRec.start(150); // 150 ms chunks
+  mediaRec.ondataavailable = e => { if(e.data?.size>0) audioChunks.push(e.data); };
+  mediaRec.onstop = async () => { stream.getTracks().forEach(t=>t.stop()); await transcribe(); };
+  mediaRec.start(150);
 
-  /* Hard cap: 18 s maximum recording */
-  setTimeout(()=>{if(isRec)stopRec();},18000);
+  /* Hard cap */
+  setTimeout(() => { if(isRec) stopRec(); }, 18000);
 }
 
 function stopRec(){
-  if(!isRec||!mediaRec)return;
-  isRec=false;
-  if(recCleanup){recCleanup();recCleanup=null;}
-  try{if(mediaRec.state!=='inactive')mediaRec.stop();}catch(e){console.warn(e);}
+  if(!isRec || !mediaRec) return;
+  isRec = false;
+  if(recCleanup){ recCleanup(); recCleanup=null; }
+  try{ if(mediaRec.state !== 'inactive') mediaRec.stop(); }catch(e){ console.warn(e); }
   $('rec-ind').classList.remove('on');
-  $('user-input').style.opacity='1';
-  $('mic-btn').classList.remove('rec');
+  $('user-input').style.opacity = '1';
 }
 
 async function transcribe(){
-  if(!audioChunks.length){setState('idle');toast(T[lang].tMicErr,'error');return;}
+  if(skipTranscribe){ skipTranscribe=false; audioChunks=[]; setState('idle'); scheduleAutoListen(); return; }
+  if(!audioChunks.length){ setState('idle'); scheduleAutoListen(); return; }
 
-  const type=audioChunks[0].type||'audio/webm';
-  const ext=type.includes('ogg')?'ogg':type.includes('mp4')?'mp4':'webm';
-  const blob=new Blob(audioChunks,{type});
-  audioChunks=[];
+  const type = audioChunks[0].type || 'audio/webm';
+  const ext  = type.includes('ogg')?'ogg':type.includes('mp4')?'mp4':'webm';
+  const blob = new Blob(audioChunks, {type});
+  audioChunks = [];
 
-  /* Reject recordings that are clearly too short (pure noise/silence) */
-  if(blob.size<800){
-    setState('idle');
-    toast(T[lang].tMicErr,'error');
-    return;
-  }
+  if(blob.size < 800){ setState('idle'); scheduleAutoListen(); return; }
 
-  setState('thinking');toast(T[lang].tXcribe);
-  const fd=new FormData();
-  fd.append('audio',blob,`recording.${ext}`);
+  setState('thinking');
+  /* Detect likely language from any text in the input box as a hint */
+  const hint = /[\u0600-\u06FF]/.test($('user-input').value) ? 'ar' : 'en';
+  const fd = new FormData();
+  fd.append('audio', blob, `rec.${ext}`);
 
   try{
-    const r=await fetch(`/stt?lang=${lang}`,{method:'POST',body:fd,signal:AbortSignal.timeout(25000)});
-    if(!r.ok)throw new Error('STT HTTP '+r.status);
-    const d=await r.json();
-    if(d.error)console.warn('STT backend error:',d.error);
+    const r = await fetch(`/stt?lang=${hint}`, {method:'POST', body:fd, signal:AbortSignal.timeout(25000)});
+    if(!r.ok) throw new Error('STT '+r.status);
+    const d = await r.json();
+    if(d.error) console.warn('STT backend:', d.error);
     if(d.text?.trim()){
-      $('user-input').value=d.text.trim();
+      $('user-input').value = d.text.trim();
       setState('idle');
       await sendText(d.text.trim());
     }else{
       setState('idle');
-      toast(T[lang].tMicErr,'error');
+      scheduleAutoListen();
     }
   }catch(e){
-    console.error('STT fetch:',e);
+    console.error('STT:', e);
     setState('idle');
-    toast(T[lang].tConn,'error');
+    toast('Connection issue — please try again.', 'err');
+    scheduleAutoListen();
   }
 }
 
-/* ─────────────────────────────────────────
+/* ═══════════════════════════════════════════════════════════════
    ESCALATION
-───────────────────────────────────────── */
-function showEsc(){$('esc-overlay').classList.add('show');}
-function closeEsc(){$('esc-overlay').classList.remove('show');setState('idle');}
+═══════════════════════════════════════════════════════════════ */
+function showEsc(){ $('esc-ov').classList.add('show'); }
+function closeEsc(){ $('esc-ov').classList.remove('show'); setState('idle'); scheduleAutoListen(); }
 
-/* ─────────────────────────────────────────
+/* ═══════════════════════════════════════════════════════════════
    TOAST
-───────────────────────────────────────── */
-function toast(msg,type=''){
-  const tc=$('toasts');
-  const el=document.createElement('div');
-  el.className='toast'+(type?' '+type:'');el.textContent=msg;
+═══════════════════════════════════════════════════════════════ */
+function toast(msg, type=''){
+  const tc = $('toasts');
+  const el = document.createElement('div');
+  el.className = 'toast' + (type ? ' '+type : '');
+  el.textContent = msg;
   tc.appendChild(el);
-  setTimeout(()=>{el.style.transition='opacity .3s,transform .3s';el.style.opacity='0';el.style.transform='translateY(6px)';setTimeout(()=>el.remove(),320);},3200);
+  setTimeout(() => {
+    el.style.transition = 'opacity .3s,transform .3s';
+    el.style.opacity='0'; el.style.transform='translateY(6px)';
+    setTimeout(() => el.remove(), 330);
+  }, 3000);
 }
 
-/* ─────────────────────────────────────────
+/* ═══════════════════════════════════════════════════════════════
    STATUS POLL
-───────────────────────────────────────── */
+═══════════════════════════════════════════════════════════════ */
 async function pollStatus(){
   try{
-    const r=await fetch('/status');if(!r.ok)throw new Error();
-    const d=await r.json();
-    const offline=!d.groq_ready;
-    $('dot').classList.toggle('offline',offline);
-    $('status-txt').textContent=offline?T[lang].offline:T[lang].online;
+    const r = await fetch('/status'); if(!r.ok) throw new Error();
+    const d = await r.json();
+    const off = !d.groq_ready;
+    $('dot').classList.toggle('off', off);
+    $('status-txt').textContent = off ? 'Offline' : 'Online';
   }catch{
-    $('dot').classList.add('offline');
-    $('status-txt').textContent=T[lang].offline;
+    $('dot').classList.add('off');
+    $('status-txt').textContent = 'Offline';
   }
 }
 
-/* ─────────────────────────────────────────
+/* ═══════════════════════════════════════════════════════════════
    KIOSK GUARDS
-───────────────────────────────────────── */
-document.addEventListener('keydown',e=>{
-  if((e.ctrlKey||e.metaKey)&&'rRwWlLnN'.includes(e.key))e.preventDefault();
-  if(e.key==='F5')e.preventDefault();
+═══════════════════════════════════════════════════════════════ */
+document.addEventListener('keydown', e => {
+  if((e.ctrlKey||e.metaKey) && 'rRwWlLnN'.includes(e.key)) e.preventDefault();
+  if(e.key==='F5') e.preventDefault();
 });
-document.addEventListener('contextmenu',e=>e.preventDefault());
+document.addEventListener('contextmenu', e => e.preventDefault());
 
-/* ─────────────────────────────────────────
+/* ═══════════════════════════════════════════════════════════════
    INIT
-───────────────────────────────────────── */
-buildChips();pollStatus();setInterval(pollStatus,30000);
+═══════════════════════════════════════════════════════════════ */
+buildChips();
+pollStatus();
+setInterval(pollStatus, 30000);
 </script>
 </body>
 </html>
