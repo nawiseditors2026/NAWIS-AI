@@ -41,7 +41,7 @@ docs_count   = 0
 # ── System prompt ──────────────────────────────────────────────────────────────
 SYSTEM_PROMPT = """\
 You are NAWIS AI — the smart bilingual AI receptionist at the front desk of \
-New Al Wurood International School (مدرسة النورود الدولية الجديدة), Jeddah, Saudi Arabia.
+New Al Wurood International School (مدرسة الورود الدولية الجديدة), Jeddah, Saudi Arabia.
 
 CORE RULES (follow every single one, every time):
 1. ANSWER LENGTH: Maximum 2–3 short sentences. Never exceed this.
@@ -50,7 +50,7 @@ CORE RULES (follow every single one, every time):
 3. LANGUAGE: Detect the language of the user's message. \
    English → reply in English only. Arabic → reply in Arabic only. Never mix languages.
 4. ARABIC SCHOOL NAME: When replying in Arabic, always call the school \
-   "مدرسة النورود الدولية الجديدة" or "النورود". Never use "الورود" or "الوورود".
+   "مدرسة الورود الدولية الجديدة" or "الورود". Never use "النورود" or "الوورود".
 5. NO FILLER: Never start with "Certainly!", "Of course!", "Great question!", or any similar opener.
 6. CONTACT: When relevant, include: Phone +966 55 273 0945 | Email admin@alwuroodschool.org
 7. ESCALATE: For private student records, individual finances, disciplinary matters, \
@@ -367,10 +367,10 @@ async def speech_to_text(audio: UploadFile = File(...), lang: str = Query("en"))
     mime      = audio.content_type or "audio/webm"
 
     whisper_prompt = (
-        "NAWIS, Al Nurood, Jeddah, Saudi Arabia, CBSE, admissions, school fees, "
+        "NAWIS, Al Wurood International School, Jeddah, Saudi Arabia, CBSE, admissions, school fees, "
         "Grade 10, Grade 12, principal, teacher, exam, result, transport, uniform, PTM."
         if lang_code == "en" else
-        "مدرسة النورود، جدة، المملكة العربية السعودية، القبول، الرسوم، الحافلة، الامتحانات، المدير."
+        "مدرسة الورود، جدة، المملكة العربية السعودية، القبول، الرسوم، الحافلة، الامتحانات، المدير."
     )
 
     try:
