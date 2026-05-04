@@ -1,0 +1,8 @@
+node_modules/**
+dist/**
+build/**
+.next/**
+.replit
+replit.nix
+*.log
+package-lock.json
