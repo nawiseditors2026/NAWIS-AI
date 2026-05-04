@@ -1,0 +1,70 @@
+You are tasked with enhancing the NAWIS AI project - an AI-powered receptionist website for Al Wurood International School, Jeddah. This is a comprehensive full-stack application that requires specific improvements across multiple domains.
+
+PROJECT OVERVIEW:
+NAWIS AI is a bilingual (English/Arabic) AI receptionist with voice interaction capabilities, designed to assist students and parents with school-related inquiries. The system uses RAG (Retrieval-Augmented Generation) with school-specific data and includes a Telegram notification system for escalating complex queries to the headmaster.
+
+CRITICAL REQUIREMENTS TO ADDRESS:
+
+School Name Correction:
+
+Change all instances of "Al Nurood" to "Al Wurood International School" throughout:
+UI components and text
+System prompts and AI responses
+Database entries
+Configuration files
+Documentation
+Technology Stack Optimization:
+
+Review each dependency in the provided list
+Identify and implement better free alternatives for:
+AI/LLM services (currently using Groq API)
+TTS/STT services
+Database solutions
+Frontend frameworks and libraries
+Backend services
+Ensure optimal model selection within Groq API for different use cases (Ensuring token limit is not reached)
+Prioritize performance, reliability, and cost-effectiveness
+Arabic Language Enhancement:
+
+Improve Arabic UI elements (RTL support, proper typography, cultural appropriateness)
+Enhance AI's Arabic response quality and naturalness
+Ensure simultaneous english and arabic support (No switching between them)
+Implement proper Arabic text rendering and formatting
+Design System Improvements:
+
+Replace all emojis with professional, sleek icons (suggest specific icon libraries)
+Create a cohesive design language
+Eliminate UI issues: clumping, clutter, clipping
+Ensure responsive design across all devices
+Implement consistent spacing, typography, and color schemes
+Voice Interaction Enhancement:
+
+Implement human-like TTS for both English and Arabic
+Ensure fast response times
+Optimize STT accuracy for both languages
+Provide specific recommendations for TTS/STT services that match ChatGPT/Claude quality
+TECHNICAL SPECIFICATIONS:
+
+Must use free services only
+Prioritize voice interaction
+Maintain RAG functionality with school_data as primary source
+Keep Telegram notification system for query escalation
+Ensure fast, concise responses without rambling
+Support topics: admissions, staff, guidelines, events, school highlights, and everything else. Give suggestions for more information/topics/data that I can add to the primary source
+DELIVERABLES REQUIRED:
+
+Detailed analysis of current tech stack with specific improvement recommendations
+Implementation plan for each enhancement
+Code modifications with clear before/after comparisons
+Arabic language optimization strategy
+Design system guidelines with icon recommendations
+Voice interaction improvement roadmap
+Testing and quality assurance checklist
+
+PROJECT TEAM:
+NAME: BYTEBRAINS
+Mohammed Raihan (12A)
+Mohammed Nejad (12A)
+Marwan Haroon (11A)
+Mentor: Mr. Syed Ismail
+Provide comprehensive, actionable solutions that address each requirement while maintaining the project's core functionality and educational objectives.
